@@ -79,7 +79,8 @@ static int pdo_pdo_taos_stmt_execute_prepared(pdo_stmt_t *stmt) /* {{{ */
 
 
             /* summon memory to hold the row */
-            for (int i = 0; i < stmt->column_count; i++) {
+            int i;
+            for (i = 0; i < stmt->column_count; i++) {
                 switch (S->fields[i].type) {
                     case TSDB_DATA_TYPE_NULL:
                     case TSDB_DATA_TYPE_BOOL:
@@ -348,7 +349,9 @@ static int pdo_taos_stmt_describe(pdo_stmt_t *stmt, int colno) {
     if (cols[0].name) {
         return 1;
     }
-    for (int i = 0; i < stmt->column_count; i++) {
+
+    int i;
+    for (i = 0; i < stmt->column_count; i++) {
         cols[i].name = zend_string_init(S->fields[i].name, strlen(S->fields[i].name), 0);
         cols[i].precision = 0;
         cols[i].maxlen = S->fields[i].bytes;
