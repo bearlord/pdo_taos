@@ -19,8 +19,14 @@ typedef struct {
 typedef struct {
     TAOS *server;
     unsigned attached: 1;
+    unsigned _reserved: 31;
     pdo_taos_error_info einfo;
     unsigned int stmt_counter;
+    /* The following two variables have the same purpose. Unfortunately we need
+       to keep track of two different attributes having the same effect. */
+    zend_bool emulate_prepares;
+    zend_bool disable_native_prepares; /* deprecated since 5.6 */
+    zend_bool disable_prepares;
     zend_ulong max_buffer_size;
     unsigned fetch_table_names: 1;
 } pdo_taos_db_handle;
@@ -57,7 +63,8 @@ typedef struct {
 
 extern const pdo_driver_t pdo_taos_driver;
 
-extern int _pdo_taos_error(pdo_dbh_t *dbh, pdo_stmt_t *stmt, int errcode, const char *sqlstate, const char *msg, const char *file,
+extern int
+_pdo_taos_error(pdo_dbh_t *dbh, pdo_stmt_t *stmt, int errcode, const char *sqlstate, const char *msg, const char *file,
                 int line);
 
 #define pdo_taos_error(s) _pdo_taos_error(s, NULL, 0, NULL, NULL, __FILE__, __LINE__)
@@ -73,16 +80,15 @@ enum {
     PDO_TAOS_ATTR_DISABLE_NATIVE_PREPARED_STATEMENT = PDO_ATTR_DRIVER_SPECIFIC,
 };
 
-/*
 struct pdo_taos_lob_self {
     pdo_dbh_t *dbh;
     TAOS *conn;
     int lfd;
 };
-*/
+
 
 php_stream *pdo_taos_create_lob_stream(zval *pdh, int lfd);
 
-//extern const php_stream_ops pdo_taos_lob_stream_ops;
+extern const php_stream_ops pdo_taos_lob_stream_ops;
 
 #endif /* PHP_PDO_TAOS_INT_H */

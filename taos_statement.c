@@ -41,6 +41,7 @@ static int pdo_pdo_taos_stmt_execute_prepared(pdo_stmt_t *stmt) /* {{{ */
     pdo_taos_db_handle *H = S->H;
     TAOS_RES *result;
     zend_long row_count;
+    int i;
 
     taos_stmt_bind_param(S->stmt, S->params);
     if (S->params) {
@@ -79,7 +80,6 @@ static int pdo_pdo_taos_stmt_execute_prepared(pdo_stmt_t *stmt) /* {{{ */
 
 
             /* summon memory to hold the row */
-            int i;
             for (i = 0; i < stmt->column_count; i++) {
                 switch (S->fields[i].type) {
                     case TSDB_DATA_TYPE_NULL:
@@ -196,7 +196,8 @@ static const char *const pdo_param_event_names[] =
                 "PDO_PARAM_EVT_NORMALIZE"
         };
 
-static int pdo_taos_stmt_param_hook(pdo_stmt_t *stmt, struct pdo_bound_param_data *param, enum pdo_param_event event_type) {
+static int
+pdo_taos_stmt_param_hook(pdo_stmt_t *stmt, struct pdo_bound_param_data *param, enum pdo_param_event event_type) {
     zval *parameter;
     TAOS_BIND *b;
     pdo_taos_stmt *S = (pdo_taos_stmt *) stmt->driver_data;
@@ -384,85 +385,88 @@ static int pdo_taos_stmt_get_col(pdo_stmt_t *stmt, int colno, char **ptr, unsign
             case TSDB_DATA_TYPE_NULL:
                 break;
             case TSDB_DATA_TYPE_BOOL:
-                sprintf(value, "%s", ((((int32_t)(*((char *)row[colno]))) == 1) ? "1" : "0"));
+                sprintf(value, "%s", ((((int32_t)(*((char *) row[colno]))) == 1) ? "1" : "0"));
                 *ptr = value;
                 *len = S->out_length[colno];
                 break;
             case TSDB_DATA_TYPE_TINYINT:
-                sprintf(value, "%d", *((int8_t *)row[colno]));
+                sprintf(value, "%d", *((int8_t *) row[colno]));
                 *len = strlen(value);
                 *ptr = value;
                 break;
             case TSDB_DATA_TYPE_UTINYINT:
-                sprintf(value, "%u", *((uint8_t*)row[colno]));
+                sprintf(value, "%u", *((uint8_t *) row[colno]));
                 *ptr = value;
                 *len = strlen(value);
                 break;
             case TSDB_DATA_TYPE_SMALLINT:
-                sprintf(value, "%d", *((int16_t *)row[colno]));
+                sprintf(value, "%d", *((int16_t *) row[colno]));
                 *ptr = value;
                 *len = strlen(value);
                 break;
             case TSDB_DATA_TYPE_USMALLINT:
-                sprintf(value, "%u", *((uint16_t *)row[colno]));
+                sprintf(value, "%u", *((uint16_t *) row[colno]));
                 *ptr = value;
                 *len = strlen(value);
                 break;
             case TSDB_DATA_TYPE_INT:
-                sprintf(value , "%d", *((int32_t *)row[colno]));
+                sprintf(value, "%d", *((int32_t *) row[colno]));
                 *ptr = value;
                 *len = strlen(value);
                 break;
             case TSDB_DATA_TYPE_FLOAT:
-                sprintf(value, "%.5f", *(float *)row[colno]);
+                sprintf(value, "%.5f", *(float *) row[colno]);
                 *ptr = value;
                 *len = strlen(value);
                 break;
             case TSDB_DATA_TYPE_UINT:
-                sprintf(value, "%u", *((uint32_t *)row[colno]));
+                sprintf(value, "%u", *((uint32_t *) row[colno]));
                 *ptr = value;
                 *len = strlen(value);
                 break;
             case TSDB_DATA_TYPE_BIGINT:
-                sprintf(value, "%" PRId64, *((int64_t *)row[colno]));
+                sprintf(value, "%"
+                PRId64, *((int64_t *) row[colno]));
                 *ptr = value;
                 *len = strlen(value);
                 break;
             case TSDB_DATA_TYPE_DOUBLE:
-                sprintf(value, "%.9lf", *((uint64_t *)row[colno]));
+                sprintf(value, "%.9lf", *((uint64_t *) row[colno]));
                 *ptr = value;
                 *len = strlen(value);
                 break;
-            case TSDB_DATA_TYPE_TIMESTAMP:{
+            case TSDB_DATA_TYPE_TIMESTAMP: {
                 int32_t precision;
-                time_t   tt;
+                time_t tt;
                 struct tm *tp;
                 char timeStr[30] = {0};
 
                 precision = taos_result_precision(S->result);
                 if (precision == 0) {
-                    tt = (*(int64_t *)row[colno]) / 1000;
+                    tt = (*(int64_t *) row[colno]) / 1000;
                 } else if (precision == 1) {
-                    tt = (*(int64_t *)row[colno]) / 1000000;
+                    tt = (*(int64_t *) row[colno]) / 1000000;
                 } else {
-                    tt = (*(int64_t *)row[colno]) / 1000000000;
+                    tt = (*(int64_t *) row[colno]) / 1000000000;
                 }
 
                 tp = localtime(&tt);
                 strftime(timeStr, 64, "%y-%m-%d %H:%M:%S", tp);
                 if (precision == 0) {
-                    sprintf(value, "%s.%03d", timeStr, (int32_t)(*((int64_t *)row[colno]) % 1000));
+                    sprintf(value, "%s.%03d", timeStr, (int32_t)(*((int64_t *) row[colno]) % 1000));
                 } else if (precision == 1) {
-                    sprintf(value, "%s.%06d", timeStr, (int32_t)(*((int64_t *)row[colno]) % 1000000));
+                    sprintf(value, "%s.%06d", timeStr, (int32_t)(*((int64_t *) row[colno]) % 1000000));
                 } else {
-                    sprintf(value, "%s.%09d", timeStr, (int32_t)(*((int64_t *)row[colno]) % 1000000000));
+                    sprintf(value, "%s.%09d", timeStr, (int32_t)(*((int64_t *) row[colno]) % 1000000000));
                 }
 
                 *ptr = value;
                 *len = strlen(value);
-            } break;
+            }
+                break;
             case TSDB_DATA_TYPE_UBIGINT:
-                sprintf(value, "%" PRIu64, *((uint64_t *)row[colno]));
+                sprintf(value, "%"
+                PRIu64, *((uint64_t *) row[colno]));
                 *ptr = value;
                 *len = strlen(value);
                 break;
@@ -470,10 +474,11 @@ static int pdo_taos_stmt_get_col(pdo_stmt_t *stmt, int colno, char **ptr, unsign
             case TSDB_DATA_TYPE_BINARY:
             case TSDB_DATA_TYPE_NCHAR: {
                 int32_t charLen;
-                charLen = varDataLen((char*)row[colno] - VARSTR_HEADER_SIZE);
-                *ptr = (char *)row[colno];
+                charLen = varDataLen((char *) row[colno] - VARSTR_HEADER_SIZE);
+                *ptr = (char *) row[colno];
                 *len = charLen;
-            } break;
+            }
+                break;
         }
 
         if (S->out_length[colno] > S->bound_result[colno].buffer_length) {

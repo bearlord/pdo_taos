@@ -317,7 +317,14 @@ static int pdo_taos_set_attr(pdo_dbh_t *dbh, zend_long attr, zval *val)
 	zend_bool bval = zval_get_long(val)? 1 : 0;
 	pdo_taos_db_handle *H = (pdo_taos_db_handle *)dbh->driver_data;
 
-    return 0;
+	switch (attr) {
+		case PDO_ATTR_EMULATE_PREPARES:
+			H->emulate_prepares = bval;
+			return 1;
+
+		default:
+			return 0;
+	}
 }
 
 static const struct pdo_dbh_methods taos_methods = {
@@ -343,7 +350,7 @@ static int pdo_taos_handle_factory(pdo_dbh_t *dbh, zval *driver_options) /* {{{ 
 	pdo_taos_db_handle *H;
 	int ret = 0;
     char *host = NULL, *unix_socket = NULL;
-    unsigned int port = 6030;
+    uint16_t port = 6030;
     char *dbname;
 	zend_string *tmp_user, *tmp_pass;
 	zend_long connect_timeout = 30;
