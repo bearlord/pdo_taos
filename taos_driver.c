@@ -317,14 +317,7 @@ static int pdo_taos_set_attr(pdo_dbh_t *dbh, zend_long attr, zval *val)
 	zend_bool bval = zval_get_long(val)? 1 : 0;
 	pdo_taos_db_handle *H = (pdo_taos_db_handle *)dbh->driver_data;
 
-	switch (attr) {
-		case PDO_ATTR_EMULATE_PREPARES:
-			H->emulate_prepares = bval;
-			return 1;
-
-		default:
-			return 0;
-	}
+    return 0;
 }
 
 static const struct pdo_dbh_methods taos_methods = {
