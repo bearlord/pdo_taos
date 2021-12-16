@@ -72,6 +72,8 @@ _pdo_taos_error(pdo_dbh_t *dbh, pdo_stmt_t *stmt, int errcode, const char *sqlst
 #define pdo_taos_error_stmt(s, e, z)    _pdo_taos_error(s->dbh, s, e, z, NULL, __FILE__, __LINE__)
 #define pdo_taos_error_stmt_msg(s, e, m)    _pdo_taos_error(s->dbh, s, e, NULL, m, __FILE__, __LINE__)
 
+#define pdo_taos_convert_errno(errno) ((int32_t) (errno > 0 ? errno : errno + 0x80000000))
+
 extern const struct pdo_stmt_methods taos_stmt_methods;
 
 #define pdo_taos_sqlstate(r) (const char *)NULL
