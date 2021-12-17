@@ -70,12 +70,10 @@ static int pdo_pdo_taos_stmt_execute_prepared(pdo_stmt_t *stmt) /* {{{ */
             }
 
             stmt->column_count = (int) taos_field_count(S->result);
-            S->cols = ecalloc(stmt->column_count, sizeof(pdo_taos_column));
 
             S->bound_result = ecalloc(stmt->column_count, sizeof(TAOS_BIND));
             S->out_null = ecalloc(stmt->column_count, sizeof(zend_bool));
             S->out_length = ecalloc(stmt->column_count, sizeof(zend_ulong));
-
 
             /* summon memory to hold the row */
             for (i = 0; i < stmt->column_count; i++) {
@@ -153,6 +151,28 @@ static int pdo_taos_stmt_dtor(pdo_stmt_t *stmt) {
     if (S->stmt) {
         taos_stmt_close(S->stmt);
         S->stmt = NULL;
+    }
+
+    if (S->params) {
+        efree(S->params);
+    }
+    if (S->in_null) {
+        efree(S->in_null);
+    }
+    if (S->in_length) {
+        efree(S->in_length);
+    }
+
+    if (S->bound_result)
+    {
+        int i;
+        for (i = 0; i < stmt->column_count; i++) {
+            efree(S->bound_result[i].buffer);
+        }
+
+        efree(S->bound_result);
+        efree(S->out_null);
+        efree(S->out_length);
     }
 
     efree(S);
