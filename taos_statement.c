@@ -268,8 +268,6 @@ pdo_taos_stmt_param_hook(pdo_stmt_t *stmt, struct pdo_bound_param_data *param, e
                     default:;
                 }
 
-
-                printf("param->parameter->type=%d\n", Z_TYPE(param->parameter));
                 if (!Z_ISREF(param->parameter)) {
                     parameter = &param->parameter;
                 } else {
