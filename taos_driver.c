@@ -402,7 +402,6 @@ static int pdo_taos_handle_factory(pdo_dbh_t *dbh, zval *driver_options) /* {{{ 
     if(vars[3].optval) {
         port = atoi(vars[3].optval);
     }
-    printf("host: %s, username: %s, password: %s, dbname: %s, port: %d\n", host, dbh->username, dbh->password, dbname, port);
 
     taos_init();
     H->server = taos_connect(host, dbh->username, dbh->password, dbname, port);
