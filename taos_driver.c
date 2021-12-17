@@ -72,9 +72,30 @@ int _pdo_taos_error(pdo_dbh_t *dbh, pdo_stmt_t *stmt, int errcode, const char *s
 		einfo->errmsg = NULL;
 	}
 
-	if (errmsg) {
-		einfo->errmsg = _pdo_taos_trim_message(errmsg, dbh->is_persistent);
-	}
+    if (sqlstate == NULL || strlen(sqlstate) >= sizeof(pdo_error_type)) {
+        strcpy(*pdo_err, "HY000");
+    }
+    else {
+        strcpy(*pdo_err, sqlstate);
+    }
+
+    if (msg) {
+        einfo->errmsg = estrdup(msg);
+    }
+
+//	if (errcode) {
+//		einfo->errmsg = _pdo_taos_trim_message(errmsg, dbh->is_persistent);
+//	}
+
+    zend_throw_exception_ex(php_pdo_get_exception(), einfo->errcode, "SQLSTATE[%s] [0x%"PRIx64"] %s",
+            *pdo_err, einfo->errcode, einfo->errmsg);
+
+
+    if (S && S->stmt) {
+        strcpy(*pdo_err, "1000");
+    } else {
+        strcpy(*pdo_err, "10001");
+    }
 
 	if (!dbh->methods) {
 		zend_throw_exception_ex(php_pdo_get_exception(), einfo->errcode, "SQLSTATE[%s] [%d] %s",

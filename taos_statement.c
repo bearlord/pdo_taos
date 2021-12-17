@@ -50,9 +50,7 @@ static int pdo_pdo_taos_stmt_execute_prepared(pdo_stmt_t *stmt) /* {{{ */
 
     int code = taos_stmt_execute(S->stmt);
     if (code != 0) {
-        printf("ERROR: %ld, %s\n", code, taos_stmt_errstr(S->stmt));
-        pdo_taos_error_stmt(stmt, 0, 0);
-        taos_stmt_close(stmt);
+        pdo_taos_error_stmt_msg(stmt, pdo_taos_convert_errno(code), taos_stmt_errstr(S->stmt));
         return 0;
     }
 
