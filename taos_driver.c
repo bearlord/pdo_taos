@@ -369,6 +369,7 @@ static const struct pdo_dbh_methods taos_methods = {
 static int pdo_taos_handle_factory(pdo_dbh_t *dbh, zval *driver_options) /* {{{ */
 {
 	pdo_taos_db_handle *H;
+    size_t i;
 	int ret = 0;
     char *host = NULL, *unix_socket = NULL;
     uint16_t port = 6030;
@@ -408,7 +409,7 @@ static int pdo_taos_handle_factory(pdo_dbh_t *dbh, zval *driver_options) /* {{{ 
 
     if (H->server == NULL) {
         printf("failed to connect to server, reason:%s\n", "null taos");
-        exit(1);
+        goto cleanup;
     }
 
 	H->attached = 1;
@@ -420,6 +421,12 @@ static int pdo_taos_handle_factory(pdo_dbh_t *dbh, zval *driver_options) /* {{{ 
 	ret = 1;
 
 cleanup:
+    for (i = 0; i < sizeof(vars)/sizeof(vars[0]); i++) {
+        if (vars[i].freeme) {
+            efree(vars[i].optval);
+        }
+    }
+
 	dbh->methods = &taos_methods;
 	if (!ret) {
 		taos_handle_closer(dbh);
