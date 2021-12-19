@@ -43,6 +43,10 @@ if test "$PHP_PDO_TAOS" != "no"; then
     AC_MSG_ERROR([Please reinstall the pdo_taos distribution])
   fi
 
+  if test -z "$PHP_DEBUG"; then
+    AC_ARG_ENABLE(debug, [  --enable-debugcompile with debugging symbols],[PHP_DEBUG=$enableval],[PHP_DEBUG=no])
+  fi
+
   # --with-pdo_taos -> check for lib and symbol presence
   LIBNAME=taos
   LIBSYMBOL=taos_init
@@ -72,6 +76,6 @@ if test "$PHP_PDO_TAOS" != "no"; then
 
   PHP_ADD_INCLUDE($PDO_TAOS_DIR/include)
 
-  PHP_NEW_EXTENSION(pdo_taos, pdo_taos.c taos_driver.c taos_statement.c, $ext_shared,, -DZEND_ENABLE_STATIC_TSRMLS_CACHE=1)
+  PHP_NEW_EXTENSION(pdo_taos, pdo_taos.c taos_driver.c taos_statement.c, $ext_shared,, -I$pdo_cv_inc_path)
   PHP_ADD_EXTENSION_DEP(pdo_taos, pdo)
 fi
