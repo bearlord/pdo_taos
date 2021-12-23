@@ -68,26 +68,6 @@ PHP_MSHUTDOWN_FUNCTION(pdo_taos)
 }
 /* }}} */
 
-/* {{{ PHP_RINIT_FUNCTION
- */
-PHP_RINIT_FUNCTION(pdo_taos)
-{
-    /*	php_pdo_register_driver(&pdo_taos_driver); */
-    printf("PHP_RINIT_FUNCTION\n");
-    return SUCCESS;
-}
-/* }}} */
-
-/* {{{ PHP_MSHUTDOWN_FUNCTION
- */
-PHP_RSHUTDOWN_FUNCTION(pdo_taos)
-{
-    /*	php_pdo_unregister_driver(&pdo_taos_driver); */
-    printf("PHP_RSHUTDOWN_FUNCTION\n");
-    return SUCCESS;
-}
-/* }}} */
-
 /* {{{ PHP_MINFO_FUNCTION
  */
 PHP_MINFO_FUNCTION(pdo_taos)

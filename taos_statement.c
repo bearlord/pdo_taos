@@ -447,7 +447,7 @@ static int pdo_taos_stmt_get_col(pdo_stmt_t *stmt, int colno, char **ptr, unsign
                 *len = strlen(value);
                 break;
             case TSDB_DATA_TYPE_DOUBLE:
-                sprintf(value, "%.9lf", *((uint64_t *) row[colno]));
+                sprintf(value, "%.9lf", *(double *) row[colno]);
                 *ptr = value;
                 *len = strlen(value);
                 break;
@@ -467,7 +467,7 @@ static int pdo_taos_stmt_get_col(pdo_stmt_t *stmt, int colno, char **ptr, unsign
                 }
 
                 tp = localtime(&tt);
-                strftime(timeStr, 64, "%y-%m-%d %H:%M:%S", tp);
+                strftime(timeStr, 64, "%Y-%m-%d %H:%M:%S", tp);
                 if (precision == 0) {
                     sprintf(value, "%s.%03d", timeStr, (int32_t)(*((int64_t *) row[colno]) % 1000));
                 } else if (precision == 1) {
@@ -481,8 +481,7 @@ static int pdo_taos_stmt_get_col(pdo_stmt_t *stmt, int colno, char **ptr, unsign
             }
                 break;
             case TSDB_DATA_TYPE_UBIGINT:
-                sprintf(value, "%"
-                PRIu64, *((uint64_t *) row[colno]));
+                sprintf(value, "%"PRIu64, *((uint64_t *) row[colno]));
                 *ptr = value;
                 *len = strlen(value);
                 break;
