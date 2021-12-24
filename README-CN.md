@@ -1,6 +1,6 @@
 简体中文 | [English](./README.md)
 
-PDO_TAOS是涛思数据的PDO驱动。
+PDO_TAOS是 [涛思数据](https://github.com/taosdata/TDengine) 的PDO驱动。
 
 # TDengine 简介
 
@@ -12,5 +12,36 @@ TDengine是涛思数据专为物联网、车联网、工业互联网、IT运维�
 - 强大的分析功能。无论是十年前还是一秒钟前的数据，指定时间范围即可查询。数据可在时间轴上或多个设备上进行聚合。即席查询可通过Shell/Python/R/Matlab随时进行。
 - 与第三方工具无缝连接。不用一行代码，即可与Telegraf, Grafana, EMQ X, Prometheus, Matlab, R集成。后续还将支持MQTT, OPC, Hadoop，Spark等, BI工具也将无缝连接。
 - 零运维成本、零学习成本。安装、集群一秒搞定，无需分库分表，实时备份。标准SQL，支持JDBC,RESTful，支持Python/Java/C/C++/Go/Node.JS, 与MySQL相似，零学习成本。
+
+
+# 安装 PDO_TAOS
+```bash
+phpize
+./configure
+make && make install
+```
+
+## 安装TDengine
+PDO_TAOS编译时，需要libtaos.so，默认路径为：/usr/lib/libtaos.so，指向路径为：/usr/local/taos/driver/libtaos.so.2.x.x.x。所以需要先安装TDengine数据库。
+
+# 用法
+```php
+$dbh = new PDO("taos:host=127.0.0.1;dbname=test", "root", "taosdata");
+$sth = $dbh->query("select avg(current), max(voltage), min(phase) from meters where location='beijing'");
+
+$result = $sth->fetchAll();
+print_r($result);
+```
+
+```php
+$dbh = new PDO("taos:host=127.0.0.1;dbname=test", "root", "taosdata");
+$sth = $dbh->prepare("select avg(current), max(voltage), min(phase) from meters where location=:location");
+
+$location = 'beijing';
+$sth->bindValue(":location", $location, PDO::PARAM_STR);
+$sth->execute();
+$result = $sth->fetchAll(PDO::FETCH_ASSOC);
+print_r($result);
+```
 
 

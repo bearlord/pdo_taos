@@ -1,6 +1,6 @@
 English | [简体中文](./README-CN.md)
 
-PDO_TAOS is a PDO driver for TDengine database.
+PDO_TAOS is a PDO driver for [TDengine](https://github.com/taosdata/TDengine) database.
 
 # What is TDengine？
 
@@ -17,3 +17,33 @@ TDengine is an open-sourced big data platform under [GNU AGPL v3.0](http://www.g
 - **Seamless Integration with Other Tools**: Telegraf, Grafana, Matlab, R, and other tools can be integrated with TDengine without a line of code. MQTT, OPC, Hadoop, Spark, and many others will be integrated soon.
 
 - **Zero Management, No Learning Curve**: It takes only seconds to download, install, and run it successfully; there are no other dependencies. Automatic partitioning on tables or DBs. Standard SQL is used, with C/C++, Python, JDBC, Go and RESTful connectors.
+
+# Install PDO_TAOS
+```bash
+phpize
+./configure
+make && make install
+```
+
+## Install TDengine
+When PDO_TAOS is compiled, libtaos.so is required. The default path is: /usr/lib/libtaos.so, pointing to: /usr/local/taos/driver/libtaos.so.2.x.x.x. So you need to install the TDengine database first. 
+
+# Examples
+```php
+$dbh = new PDO("taos:host=127.0.0.1;dbname=test", "root", "taosdata");
+$sth = $dbh->query("select avg(current), max(voltage), min(phase) from meters where location='beijing'");
+
+$result = $sth->fetchAll();
+print_r($result);
+```
+
+```php
+$dbh = new PDO("taos:host=127.0.0.1;dbname=test", "root", "taosdata");
+$sth = $dbh->prepare("select avg(current), max(voltage), min(phase) from meters where location=:location");
+
+$location = 'beijing';
+$sth->bindValue(":location", $location, PDO::PARAM_STR);
+$sth->execute();
+$result = $sth->fetchAll(PDO::FETCH_ASSOC);
+print_r($result);
+```
