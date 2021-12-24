@@ -118,7 +118,6 @@ static int pdo_pdo_taos_stmt_execute_prepared(pdo_stmt_t *stmt) /* {{{ */
                 }
 
                 S->out_length[i] = S->bound_result[i].buffer_length;
-//                S->out_length[i] =  0;
                 S->bound_result[i].buffer = emalloc(S->bound_result[i].buffer_length);
                 S->bound_result[i].is_null = &S->out_null[i];
                 S->bound_result[i].length = &S->out_length[i];
@@ -163,8 +162,7 @@ static int pdo_taos_stmt_dtor(pdo_stmt_t *stmt) {
         efree(S->in_length);
     }
 
-    if (S->bound_result)
-    {
+    if (S->bound_result) {
         int i;
         for (i = 0; i < stmt->column_count; i++) {
             efree(S->bound_result[i].buffer);
