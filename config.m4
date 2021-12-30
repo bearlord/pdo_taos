@@ -44,7 +44,7 @@ if test "$PHP_PDO_TAOS" != "no"; then
   fi
 
   if test -z "$PHP_DEBUG"; then
-    AC_ARG_ENABLE(debug, [  --enable-debug with debugging symbols],[PHP_DEBUG=$enableval],[PHP_DEBUG=no])
+    AC_ARG_ENABLE(debug, [  --enable-debug           with debugging symbols],[PHP_DEBUG=$enableval],[PHP_DEBUG=no])
   fi
 
   # --with-pdo_taos -> check for lib and symbol presence

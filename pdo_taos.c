@@ -63,6 +63,7 @@ PHP_MINIT_FUNCTION(pdo_taos)
  */
 PHP_MSHUTDOWN_FUNCTION(pdo_taos)
 {
+    taos_cleanup();
     php_pdo_unregister_driver(&pdo_taos_driver);
     return SUCCESS;
 }

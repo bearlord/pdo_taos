@@ -132,7 +132,8 @@ static int pdo_pdo_taos_stmt_execute_prepared(pdo_stmt_t *stmt) /* {{{ */
 
 /* }}} */
 
-static int pdo_taos_stmt_dtor(pdo_stmt_t *stmt) {
+static int pdo_taos_stmt_dtor(pdo_stmt_t *stmt)
+{
     pdo_taos_stmt *S = (pdo_taos_stmt *) stmt->driver_data;
     pdo_taos_db_handle *H = S->H;
 
@@ -178,7 +179,8 @@ static int pdo_taos_stmt_dtor(pdo_stmt_t *stmt) {
     return 1;
 }
 
-static int pdo_taos_stmt_execute(pdo_stmt_t *stmt) {
+static int pdo_taos_stmt_execute(pdo_stmt_t *stmt)
+{
     pdo_taos_stmt *S = (pdo_taos_stmt *) stmt->driver_data;
     pdo_taos_db_handle *H = S->H;
 
@@ -202,18 +204,18 @@ static int pdo_taos_stmt_execute(pdo_stmt_t *stmt) {
 }
 
 static const char *const pdo_param_event_names[] =
-        {
-                "PDO_PARAM_EVT_ALLOC",
-                "PDO_PARAM_EVT_FREE",
-                "PDO_PARAM_EVT_EXEC_PRE",
-                "PDO_PARAM_EVT_EXEC_POST",
-                "PDO_PARAM_EVT_FETCH_PRE",
-                "PDO_PARAM_EVT_FETCH_POST",
-                "PDO_PARAM_EVT_NORMALIZE"
-        };
+{
+    "PDO_PARAM_EVT_ALLOC",
+    "PDO_PARAM_EVT_FREE",
+    "PDO_PARAM_EVT_EXEC_PRE",
+    "PDO_PARAM_EVT_EXEC_POST",
+    "PDO_PARAM_EVT_FETCH_PRE",
+    "PDO_PARAM_EVT_FETCH_POST",
+    "PDO_PARAM_EVT_NORMALIZE"
+};
 
-static int
-pdo_taos_stmt_param_hook(pdo_stmt_t *stmt, struct pdo_bound_param_data *param, enum pdo_param_event event_type) {
+static int pdo_taos_stmt_param_hook(pdo_stmt_t *stmt, struct pdo_bound_param_data *param, enum pdo_param_event event_type)
+{
     zval *parameter;
     TAOS_BIND *b;
     pdo_taos_stmt *S = (pdo_taos_stmt *) stmt->driver_data;
@@ -327,7 +329,8 @@ pdo_taos_stmt_param_hook(pdo_stmt_t *stmt, struct pdo_bound_param_data *param, e
     return 1;
 }
 
-static int pdo_taos_stmt_fetch(pdo_stmt_t *stmt, enum pdo_fetch_orientation ori, long offset) {
+static int pdo_taos_stmt_fetch(pdo_stmt_t *stmt, enum pdo_fetch_orientation ori, long offset)
+{
     pdo_taos_stmt *S = (pdo_taos_stmt *) stmt->driver_data;
     pdo_taos_db_handle *H = S->H;
     TAOS_RES *result;
@@ -345,7 +348,8 @@ static int pdo_taos_stmt_fetch(pdo_stmt_t *stmt, enum pdo_fetch_orientation ori,
     return 1;
 }
 
-static int pdo_taos_stmt_describe(pdo_stmt_t *stmt, int colno) {
+static int pdo_taos_stmt_describe(pdo_stmt_t *stmt, int colno)
+{
     pdo_taos_stmt *S = (pdo_taos_stmt *) stmt->driver_data;
     struct pdo_column_data *cols = stmt->columns;
 
@@ -375,7 +379,8 @@ static int pdo_taos_stmt_describe(pdo_stmt_t *stmt, int colno) {
     return 1;
 }
 
-static int pdo_taos_stmt_get_col(pdo_stmt_t *stmt, int colno, char **ptr, unsigned long *len, int *caller_frees) {
+static int pdo_taos_stmt_get_col(pdo_stmt_t *stmt, int colno, char **ptr, unsigned long *len, int *caller_frees)
+{
     pdo_taos_stmt *S = (pdo_taos_stmt *) stmt->driver_data;
     if (!S->result) {
         return 0;
@@ -429,7 +434,7 @@ static int pdo_taos_stmt_get_col(pdo_stmt_t *stmt, int colno, char **ptr, unsign
                 *len = strlen(value);
                 break;
             case TSDB_DATA_TYPE_FLOAT:
-                sprintf(value, "%.5f", *(float *) row[colno]);
+                sprintf(value, "%.5f", GET_FLOAT_VAL(row[colno]));
                 *ptr = value;
                 *len = strlen(value);
                 break;
@@ -445,7 +450,7 @@ static int pdo_taos_stmt_get_col(pdo_stmt_t *stmt, int colno, char **ptr, unsign
                 *len = strlen(value);
                 break;
             case TSDB_DATA_TYPE_DOUBLE:
-                sprintf(value, "%.9lf", *(double *) row[colno]);
+                sprintf(value, "%.9lf", GET_DOUBLE_VAL(row[colno]));
                 *ptr = value;
                 *len = strlen(value);
                 break;
@@ -456,9 +461,9 @@ static int pdo_taos_stmt_get_col(pdo_stmt_t *stmt, int colno, char **ptr, unsign
                 char timeStr[30] = {0};
 
                 precision = taos_result_precision(S->result);
-                if (precision == 0) {
+                if (precision == TSDB_TIME_PRECISION_MILLI) {
                     tt = (*(int64_t *) row[colno]) / 1000;
-                } else if (precision == 1) {
+                } else if (precision == TSDB_TIME_PRECISION_MICRO) {
                     tt = (*(int64_t *) row[colno]) / 1000000;
                 } else {
                     tt = (*(int64_t *) row[colno]) / 1000000000;
@@ -510,7 +515,8 @@ static int pdo_taos_stmt_get_col(pdo_stmt_t *stmt, int colno, char **ptr, unsign
     return 1;
 }
 
-static int pdo_taos_stmt_get_column_meta(pdo_stmt_t *stmt, long colno, zval *return_value) {
+static int pdo_taos_stmt_get_column_meta(pdo_stmt_t *stmt, long colno, zval *return_value)
+{
     pdo_taos_stmt *S = (pdo_taos_stmt *) stmt->driver_data;
     const TAOS_FIELD *F;
     zval flags;
@@ -532,8 +538,8 @@ static int pdo_taos_stmt_get_column_meta(pdo_stmt_t *stmt, long colno, zval *ret
     return SUCCESS;
 }
 
-static int pdo_taos_stmt_cursor_closer(pdo_stmt_t *stmt) {
-    printf("pdo_taos_stmt_cursor_closer\n");
+static int pdo_taos_stmt_cursor_closer(pdo_stmt_t *stmt)
+{
     return 1;
 }
 
