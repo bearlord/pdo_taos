@@ -55,10 +55,10 @@ if test "$PHP_PDO_TAOS" != "no"; then
 
   PHP_CHECK_LIBRARY($LIBNAME, $LIBSYMBOL,
   [
-    AC_CHECK_LIB($LIBNAME, taos_init, AC_DEFINE(HAVE_TAOS_INIT, 1, [TDengine 2.0.5.1 or later]))
-    AC_CHECK_LIB($LIBNAME, taos_cleanup, AC_DEFINE(HAVE_TAOS_CLEANUP, 1, [TDengine 2.0.5.1 or later]))
-    AC_CHECK_LIB($LIBNAME, taos_options, AC_DEFINE(HAVE_TAOS_OPTIONS, 1, [TDengine 2.0.5.1 or later]))
-    AC_CHECK_LIB($LIBNAME, taos_connect, AC_DEFINE(HAVE_TAOS_CONNECT, 1, [TDengine 2.0.5.1 or later]))
+    AC_CHECK_LIB($LIBNAME, taos_init, AC_DEFINE(HAVE_TAOS_INIT, 1, [TDengine 2.2.0.0 or later]))
+    AC_CHECK_LIB($LIBNAME, taos_cleanup, AC_DEFINE(HAVE_TAOS_CLEANUP, 1, [TDengine 2.2.0.0 or later]))
+    AC_CHECK_LIB($LIBNAME, taos_options, AC_DEFINE(HAVE_TAOS_OPTIONS, 1, [TDengine 2.2.0.0 or later]))
+    AC_CHECK_LIB($LIBNAME, taos_connect, AC_DEFINE(HAVE_TAOS_CONNECT, 1, [TDengine 2.2.0.0 or later]))
     AC_DEFINE(HAVE_TAOS_LIB, 1, [Define to 1 if you have the taos lib file.])
   ],[
     AC_MSG_ERROR([wrong taos lib version or lib not found, lib path $PDO_TAOS_DIR/$TAOS_LIBDIR])
