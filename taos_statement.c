@@ -77,47 +77,10 @@ static int pdo_pdo_taos_stmt_execute_prepared(pdo_stmt_t *stmt) /* {{{ */
 
             /* summon memory to hold the row */
             for (i = 0; i < stmt->column_count; i++) {
-                switch (S->fields[i].type) {
-                    case TSDB_DATA_TYPE_NULL:
-                    case TSDB_DATA_TYPE_BOOL:
-                    case TSDB_DATA_TYPE_TINYINT:
-                        S->bound_result[i].buffer_length = sizeof(v.tiny_value);
-                        break;
-                    case TSDB_DATA_TYPE_UTINYINT:
-                        S->bound_result[i].buffer_length = sizeof(v.utiny_value);
-                        break;
-                    case TSDB_DATA_TYPE_SMALLINT:
-                    case TSDB_DATA_TYPE_USMALLINT:
-                        S->bound_result[i].buffer_length = sizeof(v.usmall_value);
-                        break;
-                    case TSDB_DATA_TYPE_INT:
-                        S->bound_result[i].buffer_length = sizeof(v.int_value);
-                        break;
-                    case TSDB_DATA_TYPE_FLOAT:
-                    case TSDB_DATA_TYPE_UINT:
-                        S->bound_result[i].buffer_length = sizeof(v.uint_value);
-                        break;
-                    case TSDB_DATA_TYPE_BIGINT:
-                        S->bound_result[i].buffer_length = sizeof(v.long_value);
-                        break;
-                    case TSDB_DATA_TYPE_DOUBLE:
-                        S->bound_result[i].buffer_length = sizeof(v.double_value);
-                        break;
-                    case TSDB_DATA_TYPE_TIMESTAMP:
-                        S->bound_result[i].buffer_length = sizeof(v.ts_value);
-                        break;
-                    case TSDB_DATA_TYPE_UBIGINT:
-                        S->bound_result[i].buffer_length = sizeof(v.ulong_value);
-                        break;
-                    case TSDB_DATA_TYPE_BINARY:
-                        S->bound_result[i].buffer_length = sizeof(v.binary_value);
-                        break;
-                    case TSDB_DATA_TYPE_NCHAR:
-                        S->bound_result[i].buffer_length = sizeof(v.nchar_value);
-                        break;
-                }
+                S->bound_result[i].buffer_length = S->fields[i].bytes;
 
                 S->out_length[i] = S->bound_result[i].buffer_length;
+
                 S->bound_result[i].buffer = emalloc(S->bound_result[i].buffer_length);
                 S->bound_result[i].is_null = &S->out_null[i];
                 S->bound_result[i].length = &S->out_length[i];
@@ -468,7 +431,6 @@ static int pdo_taos_stmt_get_col(pdo_stmt_t *stmt, int colno, char **ptr, unsign
                 } else {
                     tt = (*(int64_t *) row[colno]) / 1000000000;
                 }
-
                 tp = localtime(&tt);
                 strftime(timeStr, 64, "%Y-%m-%d %H:%M:%S", tp);
                 if (precision == 0) {
@@ -478,7 +440,6 @@ static int pdo_taos_stmt_get_col(pdo_stmt_t *stmt, int colno, char **ptr, unsign
                 } else {
                     sprintf(value, "%s.%09d", timeStr, (int32_t)(*((int64_t *) row[colno]) % 1000000000));
                 }
-
                 *ptr = value;
                 *len = strlen(value);
             }
@@ -544,15 +505,15 @@ static int pdo_taos_stmt_cursor_closer(pdo_stmt_t *stmt)
 }
 
 const struct pdo_stmt_methods taos_stmt_methods = {
-        pdo_taos_stmt_dtor,
-        pdo_taos_stmt_execute,
-        pdo_taos_stmt_fetch,
-        pdo_taos_stmt_describe,
-        pdo_taos_stmt_get_col,
-        pdo_taos_stmt_param_hook,
-        NULL, /* set_attr */
-        NULL, /* get_attr */
-        pdo_taos_stmt_get_column_meta,
-        NULL,  /* next_rowset */
-        NULL /* cursor_closer */
+    pdo_taos_stmt_dtor,             /* free the statement handle */
+    pdo_taos_stmt_execute,          /* start the query */
+    pdo_taos_stmt_fetch,            /* next row */
+    pdo_taos_stmt_describe,         /* column information */
+    pdo_taos_stmt_get_col,          /* retrieves pointer and size of the value for a column */
+    pdo_taos_stmt_param_hook,       /* param hook */
+    NULL,                           /* set_attr */
+    NULL,                           /* get_attr */
+    pdo_taos_stmt_get_column_meta,  /* retrieves meta data for a numbered column */
+    NULL,                           /* next_rowset */
+    NULL                            /* cursor_closer */
 };
