@@ -356,7 +356,7 @@ static const struct pdo_dbh_methods taos_methods = {
     NULL,    /* check_liveness */
     pdo_taos_get_driver_methods,  /* get_driver_methods */
     NULL,
-    taos_handle_in_transaction,
+    taos_handle_in_transaction, /* in_transaction */
 };
 
 /* {{{ pdo_taos_handle_factory */
