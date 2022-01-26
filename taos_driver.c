@@ -83,8 +83,8 @@ int _pdo_taos_error(pdo_dbh_t *dbh, pdo_stmt_t *stmt, int errcode, const char *s
         einfo->errmsg = estrdup(msg);
     }
 
-    zend_throw_exception_ex(php_pdo_get_exception(), einfo->errcode, "SQLSTATE[%s] [0x%"PRIx64"] %s",
-            *pdo_err, einfo->errcode, einfo->errmsg);
+    zend_throw_exception_ex(php_pdo_get_exception(), einfo->errcode, "SQLSTATE[%s] [0x%04x] %s",
+                            *pdo_err, einfo->errcode, einfo->errmsg);
 
     return einfo->errcode;
 }
@@ -169,8 +169,9 @@ static int taos_handle_preparer(pdo_dbh_t *dbh, const char *sql, size_t sql_len,
         return 0;
     }
 
-    if (taos_stmt_prepare(S->stmt, sql, sql_len) != 0) {
-        pdo_taos_error(dbh);
+    int code = taos_stmt_prepare(S->stmt, sql, 0);
+    if (code != 0) {
+        pdo_taos_error_stmt_msg(stmt, pdo_taos_convert_errno(code), taos_stmt_errstr(S->stmt));
         if (nsql) {
             efree(nsql);
         }
