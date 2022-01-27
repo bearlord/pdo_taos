@@ -40,10 +40,17 @@ static int pdo_pdo_taos_stmt_execute_prepared(pdo_stmt_t *stmt) /* {{{ */
     pdo_taos_stmt *S = stmt->driver_data;
     pdo_taos_db_handle *H = S->H;
     TAOS_RES *result;
+    int insert;
     zend_long row_count;
     int i;
 
     taos_stmt_bind_param(S->stmt, S->params);
+
+    taos_stmt_is_insert(S->stmt, &insert);
+    if (insert) {
+        taos_stmt_add_batch(S->stmt);
+    }
+
     if (S->params) {
         memset(S->params, 0, S->num_params * sizeof(TAOS_BIND));
     }
@@ -215,9 +222,10 @@ static int pdo_taos_stmt_param_hook(pdo_stmt_t *stmt, struct pdo_bound_param_dat
 
                 b = (PDO_TAOS_PARAM_BIND *) param->driver_data;
                 *b->is_null = 0;
-                if (PDO_PARAM_TYPE(param->param_type) == PDO_PARAM_NULL || Z_TYPE_P(parameter) == IS_NULL) {
+
+                if (Z_TYPE_P(parameter) == IS_NULL) {
                     *b->is_null = 1;
-                    b->buffer_type = TSDB_DATA_TYPE_BINARY;
+                    b->buffer_type = TSDB_DATA_TYPE_NULL;
                     b->buffer = NULL;
                     b->buffer_length = 0;
                     *b->length = 0;
@@ -225,6 +233,41 @@ static int pdo_taos_stmt_param_hook(pdo_stmt_t *stmt, struct pdo_bound_param_dat
                 }
 
                 switch (PDO_PARAM_TYPE(param->param_type)) {
+                    case TSDB_DATA_TYPE_NULL + 6000:
+                        *b->is_null = 1;
+                        b->buffer_type = PDO_PARAM_TYPE(param->param_type) - 6000;
+                        b->buffer = NULL;
+                        b->buffer_length = 0;
+                        *b->length = 0;
+                        return 1;
+                        break;
+
+                    case TSDB_DATA_TYPE_BOOL + 6000:
+                    case TSDB_DATA_TYPE_TINYINT + 6000:
+                    case TSDB_DATA_TYPE_SMALLINT + 6000:
+                    case TSDB_DATA_TYPE_INT + 6000:
+                    case TSDB_DATA_TYPE_BIGINT + 6000:
+                    case TSDB_DATA_TYPE_FLOAT + 6000:
+                    case TSDB_DATA_TYPE_DOUBLE + 6000:
+                    case TSDB_DATA_TYPE_TIMESTAMP + 6000:
+                    case TSDB_DATA_TYPE_UTINYINT + 6000:
+                    case TSDB_DATA_TYPE_USMALLINT + 6000:
+                    case TSDB_DATA_TYPE_UINT + 6000:
+                    case TSDB_DATA_TYPE_UBIGINT + 6000:
+                        b->buffer_type = PDO_PARAM_TYPE(param->param_type) - 6000;
+                        b->buffer = &Z_LVAL_P(parameter);
+                        return 1;
+                        break;
+
+                    case TSDB_DATA_TYPE_BINARY + 6000:
+                    case TSDB_DATA_TYPE_NCHAR + 6000:
+                        b->buffer_type = PDO_PARAM_TYPE(param->param_type) - 6000;
+                        b->buffer = Z_STRVAL_P(parameter);
+                        b->buffer_length = Z_STRLEN_P(parameter);
+                        *b->length = Z_STRLEN_P(parameter);
+                        return 1;
+                        break;
+
                     case PDO_PARAM_STMT:
                         return 0;
 
@@ -246,37 +289,10 @@ static int pdo_taos_stmt_param_hook(pdo_stmt_t *stmt, struct pdo_bound_param_dat
                                 return 0;
                             }
                         }
-                        /* fall through */
-
-                    default:;
-                }
-
-                if (!Z_ISREF(param->parameter)) {
-                    parameter = &param->parameter;
-                } else {
-                    parameter = Z_REFVAL(param->parameter);
-                }
-                switch (Z_TYPE_P(parameter)) {
-                    case IS_STRING:
-                        b->buffer_type = TSDB_DATA_TYPE_BINARY;
-                        b->buffer = Z_STRVAL_P(parameter);
-                        b->buffer_length = Z_STRLEN_P(parameter);
-                        *b->length = Z_STRLEN_P(parameter);
-                        return 1;
-
-                    case IS_LONG:
-                        b->buffer_type = TSDB_DATA_TYPE_BIGINT;
-                        b->buffer = &Z_LVAL_P(parameter);
-                        return 1;
-
-                    case IS_DOUBLE:
-                        b->buffer_type = TSDB_DATA_TYPE_DOUBLE;
-                        b->buffer = &Z_DVAL_P(parameter);
-                        return 1;
-
                     default:
                         return 0;
                 }
+                break;
 
 
             case PDO_PARAM_EVT_FREE:
