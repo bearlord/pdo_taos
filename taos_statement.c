@@ -66,6 +66,9 @@ static int pdo_pdo_taos_stmt_execute_prepared(pdo_stmt_t *stmt) /* {{{ */
         if (S->result) {
             S->fields = taos_fetch_fields(S->result);
 
+            stmt->row_count = (zend_long) taos_affected_rows(S->result);
+            stmt->column_count = (int) taos_field_count(S->result);
+
             if (S->bound_result) {
                 int j;
                 for (j = 0; j < stmt->column_count; j++) {
@@ -75,9 +78,6 @@ static int pdo_pdo_taos_stmt_execute_prepared(pdo_stmt_t *stmt) /* {{{ */
                 efree(S->out_null);
                 efree(S->out_length);
             }
-
-            stmt->column_count = (int) taos_field_count(S->result);
-
             S->bound_result = ecalloc(stmt->column_count, sizeof(TAOS_BIND));
             S->out_null = ecalloc(stmt->column_count, sizeof(zend_bool));
             S->out_length = ecalloc(stmt->column_count, sizeof(zend_ulong));
@@ -94,7 +94,6 @@ static int pdo_pdo_taos_stmt_execute_prepared(pdo_stmt_t *stmt) /* {{{ */
                 S->bound_result[i].buffer_type = TSDB_DATA_TYPE_BINARY;
             }
         }
-
     }
 
     return 1;
@@ -154,7 +153,7 @@ static int pdo_taos_stmt_execute(pdo_stmt_t *stmt)
     pdo_taos_stmt *S = (pdo_taos_stmt *) stmt->driver_data;
     pdo_taos_db_handle *H = S->H;
 
-    //to do modify
+    //to be modified
     if (S->stmt) {
         return pdo_pdo_taos_stmt_execute_prepared(stmt);
     }
@@ -293,7 +292,6 @@ static int pdo_taos_stmt_param_hook(pdo_stmt_t *stmt, struct pdo_bound_param_dat
                         return 0;
                 }
                 break;
-
 
             case PDO_PARAM_EVT_FREE:
             case PDO_PARAM_EVT_EXEC_POST:

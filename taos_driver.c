@@ -200,16 +200,18 @@ static zend_long taos_handle_doer(pdo_dbh_t *dbh, const char *sql, size_t sql_le
     pdo_taos_db_handle *H = (pdo_taos_db_handle *) dbh->driver_data;
     TAOS_RES *res;
     zend_long ret = 1;
+    int errno;
 
-    if (!(res = taos_query(H->server, sql))) {
-        /* fatal error */
-        pdo_taos_error(dbh);
+    res = taos_query(H->server, sql);
+    errno = taos_errno(res);
+    if (errno != 0) {
+        pdo_taos_error_msg(dbh, pdo_taos_convert_errno(errno), taos_errstr(res));
         return -1;
     }
 
-    int c = taos_affected_rows(H->server);
+    int c = taos_affected_rows(res);
     if (c == -1) {
-        pdo_taos_error(dbh);
+        pdo_taos_error_msg(dbh, pdo_taos_convert_errno(errno), taos_errstr(res));
         return -1;
     }
 
