@@ -44,7 +44,9 @@ static int pdo_pdo_taos_stmt_execute_prepared(pdo_stmt_t *stmt) /* {{{ */
     zend_long row_count;
     int i;
 
-    taos_stmt_bind_param(S->stmt, S->params);
+    if (S->params) {
+        taos_stmt_bind_param(S->stmt, S->params);
+    }
 
     taos_stmt_is_insert(S->stmt, &insert);
     if (insert) {
