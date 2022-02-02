@@ -435,7 +435,7 @@ When writing data with duplicate timestamps to a table that supports the data up
 
 ## 6. DELETE delete data
 
-As of `TDengine V2.4`, **the data table** does not support the DELETE operation. 
+Up to now, the `TDengine` version is` V2.4`, and the data table does not support the DELETE operation.  
 
 However, **the database** supports automatic deletion. The deletion time is related to the `keep` parameter specified when the database is created. The default is 3650 days, or 10 years. After 10 years, the database will be automatically logically deleted, and the database files will be automatically backed up to the appropriate location.  
 
