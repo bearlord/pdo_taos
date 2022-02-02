@@ -58,7 +58,7 @@ $dbh = new PDO("taos:host=127.0.0.1;dbname=test", "root", "taosdata");
 
 ## 2. CREATE create data table 
 
-Creating a data table is similar to `MySQ`L syntax, and the data types are similar, but there are differences. 
+Creating a data table is similar to `MySQL` syntax, and the data types are similar, but there are differences. 
 
 `TDengine` has its own database type, `NCHAR` is similar to MySQL's `VARCHAR`, and `BINARY` is similar to MySQL's `TEXT`. 
 
