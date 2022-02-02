@@ -248,7 +248,7 @@ static int pdo_taos_stmt_param_hook(pdo_stmt_t *stmt, struct pdo_bound_param_dat
                     case TSDB_DATA_TYPE_SMALLINT + 6000:
                     case TSDB_DATA_TYPE_INT + 6000:
                     case TSDB_DATA_TYPE_BIGINT + 6000:
-                    case TSDB_DATA_TYPE_FLOAT + 6000:
+
                     case TSDB_DATA_TYPE_DOUBLE + 6000:
                     case TSDB_DATA_TYPE_TIMESTAMP + 6000:
                     case TSDB_DATA_TYPE_UTINYINT + 6000:
@@ -260,6 +260,13 @@ static int pdo_taos_stmt_param_hook(pdo_stmt_t *stmt, struct pdo_bound_param_dat
                         return 1;
                         break;
 
+                    case TSDB_DATA_TYPE_FLOAT + 6000:
+                        b->buffer_type = PDO_PARAM_TYPE(param->param_type) - 6000;
+                        b->buffer = (float*) emalloc(sizeof(float));
+                        *((float*) b->buffer) = (float) Z_DVAL_P(parameter);
+                        return 1;
+                        break;
+
                     case TSDB_DATA_TYPE_BINARY + 6000:
                     case TSDB_DATA_TYPE_NCHAR + 6000:
                         b->buffer_type = PDO_PARAM_TYPE(param->param_type) - 6000;
@@ -268,9 +275,6 @@ static int pdo_taos_stmt_param_hook(pdo_stmt_t *stmt, struct pdo_bound_param_dat
                         *b->length = Z_STRLEN_P(parameter);
                         return 1;
                         break;
-
-                    case PDO_PARAM_STMT:
-                        return 0;
 
                     case PDO_PARAM_LOB:
                         if (!Z_ISREF(param->parameter)) {
@@ -290,8 +294,31 @@ static int pdo_taos_stmt_param_hook(pdo_stmt_t *stmt, struct pdo_bound_param_dat
                                 return 0;
                             }
                         }
+                        break;
                     default:
+                        switch (Z_TYPE_P(parameter)) {
+                            case IS_STRING:
+                                b->buffer_type = TSDB_DATA_TYPE_BINARY;
+                                b->buffer = Z_STRVAL_P(parameter);
+                                b->buffer_length = Z_STRLEN_P(parameter);
+                                *b->length = Z_STRLEN_P(parameter);
+                                return 1;
+
+                            case IS_LONG:
+                                b->buffer_type = TSDB_DATA_TYPE_BIGINT;
+                                b->buffer = &Z_LVAL_P(parameter);
+                                return 1;
+
+                            case IS_DOUBLE:
+                                b->buffer_type = TSDB_DATA_TYPE_DOUBLE;
+                                b->buffer = &Z_DVAL_P(parameter);
+                                return 1;
+
+                            default:
+                                return 0;
+                        }
                         return 0;
+                        break;
                 }
                 break;
 
