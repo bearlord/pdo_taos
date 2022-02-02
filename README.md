@@ -457,7 +457,7 @@ The database of TDengine has a storage time, which is 10 years by default.
 
 If the device logs are saved as a single database, the device log three years ago has no reference value, but the data cannot be deleted, which will occupy the hard disk space and affect the running speed of the database. 
 
-If device logs are saved as multiple databases separated by `year`. It will not cause the single database and data set to be too large, and the efficiency of inserting and querying data is maintained. Meaningless device logs can be deleted or archived.  
+If the device logs are saved as multiple databases separated by `year`. It will not cause the single database and data set to be too large, and the efficiency of inserting and querying data is maintained. Meaningless device logs can be deleted or archived.  
 
 
 
