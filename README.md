@@ -417,7 +417,7 @@ No one would have thought that weakly typed PHP requires strong consistency betw
 
 
 
-## 5. UPDATE 修改数据
+## 5. UPDATE update data
 
 `TDengine` does not support modification operations by default. Data with duplicate timestamps is written to a table that does not support data updates, and **the later written data** will be **discarded**. 
 
@@ -433,7 +433,7 @@ When writing data with duplicate timestamps to a table that supports the data up
 
 
 
-## 6. DELETE 删除数据
+## 6. DELETE delete data
 
 As of `TDengine V2.4`, **the data table** does not support the DELETE operation. 
 
