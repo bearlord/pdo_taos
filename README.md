@@ -225,7 +225,7 @@ Placeholder supports parameter names in the form of `:name`, and also in the for
 
 
 
-#### Type of data 
+#### Data types 
 
 Please forget PDO predefined types such as `PDO::PARAM_BOOL`, `PDO::PARAM_INT`, `PDO::PARAM_STR`, etc. 
 
