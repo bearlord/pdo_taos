@@ -33,9 +33,9 @@ make && make install
 
 ## 开启 pdo_taos 扩展
 
-编辑 `php.ini` 文件 或者在 `php.d` 目录下新增配件文件。
+编辑 `php.ini` 文件 或者在 `php.d` 目录下新增配置文件。
 
-```
+```ini
 extension=pdo_taos.so
 ```
 
@@ -73,7 +73,7 @@ $dbh = new PDO("taos:host=127.0.0.1;dbname=test", "root", "taosdata");
 
 创建数据表与 `MySQL` 语法类似，数据类型也有类似，但是又有区别。
 
-`TDengine` 有自己的数据库类型，`NCHAR` 类似 `MySQL` 的 `VARCHAR`，`BINARY` 类似 `MySQ`L的 `TEXT`。
+`TDengine` 有自己的数据库类型，`NCHAR` 类似 MySQL 的 `VARCHAR`，`BINARY` 类似 MySQL 的 `TEXT`。
 
 `TDengine` 没有 `PRIMARY KEY`、`AUTO INCREMENT`, `DEFAULT NULL` 等关键字。
 
@@ -102,7 +102,7 @@ $result = $dbh->exec($sql);
 var_dump($result);
 ```
 
-执行如果成功，$result 返回 `0` ；  如果失败了，返回 `-1`。
+如果执行成功，`$result` 返回 **0** ；  如果失败了，返回 **-1**。
 
 
 
@@ -198,7 +198,7 @@ try {
 
     $v1 = intval(microtime(true) * 1000);
     $v2 = 1;
-    $v3 = 200;
+    $v3 = 100;
     $v4 = 2000;
     $v5 = 20000;
     $v6 = 200000;
@@ -229,13 +229,15 @@ try {
 ?>
 ```
 
-执行成功，`$result` 返回 true，`$rowCount`  返回1，代表受影响的行数。
+执行成功，`$result` 返回 true，执行失败，返回false。
+
+ `$rowCount`  表示受影响的行数。
 
 
 
 #### 占位符
 
-支持应 `:name` 形式的参数名，也支持 `问号` 形式 。
+支持应 `:name` 形式的参数名，也支持 `?` 形式 。
 
 
 
@@ -247,7 +249,7 @@ try {
 
 MySQL的字段类型是 `INT`, `SMALLINT`, `TINYINT`, `BIGINT`，绑定参数为`PDO::PARAM_INT` 也可以插入 。
 
-但是`TDengine` 的API在执行 `INSERT`操作时，不能预先获取数据表的字段类型，只能与数据表的字段完美一致，才可以绑定参数。
+但是`TDengine` 的API在执行 `INSERT`操作时，不能预先获取数据表的字段类型，只能与数据表的字段完全一致，才可以绑定参数。
 
 
 
@@ -288,7 +290,7 @@ MySQL的字段类型是 `INT`, `SMALLINT`, `TINYINT`, `BIGINT`，绑定参数为
 
 
 
-#### 4.1 PDO::query方法
+### 4.1 PDO::query方法
 
 ```php
 <?php
@@ -319,7 +321,7 @@ array(3) {
     ["v_bool"]=>
     string(1) "1"
     ["v_tinyint"]=>
-    string(3) "-56"
+    string(3) "100"
     ["v_smallint"]=>
     string(4) "2000"
     ["v_int"]=>
@@ -342,7 +344,7 @@ array(3) {
     ["v_bool"]=>
     string(1) "1"
     ["v_tinyint"]=>
-    string(3) "-56"
+    string(3) "100"
     ["v_smallint"]=>
     string(4) "2000"
     ["v_int"]=>
@@ -365,7 +367,7 @@ array(3) {
     ["v_bool"]=>
     string(1) "1"
     ["v_tinyint"]=>
-    string(3) "-56"
+    string(3) "100"
     ["v_smallint"]=>
     string(4) "2000"
     ["v_int"]=>
@@ -390,7 +392,7 @@ array(3) {
 
 
 
-#### 4.2 PDO::prepare方法
+### 4.2 PDO::prepare方法
 
 ```php
 <?php
@@ -425,7 +427,7 @@ var_dump($result);
 
 
 
-估计谁也想不到，若类型的PHP，在操作 `TDengine` 数据库的时候，竟要求 **数据类型** 和 **数据表字段类型** **强一致性**。
+谁也想不到，弱类型的PHP，在操作 `TDengine` 数据库的时候，竟要求 **数据类型** 和 **数据表字段类型** **强一致性**。
 
 
 
@@ -467,7 +469,7 @@ $dbh = new PDO("taos:host=127.0.0.1", "root", "taosdata");
 
 如果设备日志保存为单数据库，3年前的设备日志已没有参考意义，但又不能删除数据，导致占用硬盘空间，同时影响数据库的运行速度。
 
-如果项目按 **年** 分库。不会导致单数据库和数据集过大，保持了插入和查询数据的高效性。没有意义的设备日志，可以删除、归档。
+如果设备日志按 **年** 分库。不会导致单数据库和数据集过大，保持了插入和查询数据的高效性。没有意义的设备日志，可以删除、归档。
 
 
 
@@ -487,7 +489,7 @@ try {
 
     $v1 = intval(microtime(true) * 1000);
     $v2 = 1;
-    $v3 = 200;
+    $v3 = 100;
     $v4 = 2000;
     $v5 = 20000;
     $v6 = 200000;
