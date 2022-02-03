@@ -237,23 +237,23 @@ Please forget PDO predefined types such as `PDO::PARAM_BOOL`, `PDO::PARAM_INT`, 
 
 Please use the following custom PDO types:
 
-| PDO自定义类型        | TDengine数据类型         | 说明      |
-| -------------------- | ------------------------ | --------- |
-| PARAM_TAOS_NULL      | TSDB_DATA_TYPE_NULL      | NULL      |
-| PARAM_TAOS_BOOL      | TSDB_DATA_TYPE_BOOL      | BOOL      |
-| PARAM_TAOS_TINYINT   | TSDB_DATA_TYPE_TINYINT   | TINYINT   |
-| PARAM_TAOS_SMALLINT  | TSDB_DATA_TYPE_SMALLINT  | SMALLINT  |
-| PARAM_TAOS_INT       | TSDB_DATA_TYPE_INT       | INT       |
-| PARAM_TAOS_BIGINT    | TSDB_DATA_TYPE_BIGINT    | BIGINT    |
-| PARAM_TAOS_FLOAT     | TSDB_DATA_TYPE_FLOAT     | FLOAT     |
-| PARAM_TAOS_DOUBLE    | TSDB_DATA_TYPE_DOUBLE    | DOUBLE    |
-| PARAM_TAOS_BINARY    | TSDB_DATA_TYPE_BINARY    | BINARY    |
-| PARAM_TAOS_TIMESTAMP | TSDB_DATA_TYPE_TIMESTAMP | TIMESTAMP |
-| PARAM_TAOS_NCHAR     | TSDB_DATA_TYPE_NCHAR     | NCHAR     |
-| PARAM_TAOS_UTINYINT  | TSDB_DATA_TYPE_UTINYINT  | UTINYINT  |
-| PARAM_TAOS_USMALLINT | TSDB_DATA_TYPE_USMALLINT | USMALLINT |
-| PARAM_TAOS_UINT      | TSDB_DATA_TYPE_UINT      | UINT      |
-| PARAM_TAOS_UBIGINT   | TSDB_DATA_TYPE_UBIGINT   | UBIGINT   |
+| CUSTOM PDO TYPE      | TDengine DATA TYPE       | DESCRIPTION |
+| -------------------- | ------------------------ | ----------- |
+| PARAM_TAOS_NULL      | TSDB_DATA_TYPE_NULL      | NULL        |
+| PARAM_TAOS_BOOL      | TSDB_DATA_TYPE_BOOL      | BOOL        |
+| PARAM_TAOS_TINYINT   | TSDB_DATA_TYPE_TINYINT   | TINYINT     |
+| PARAM_TAOS_SMALLINT  | TSDB_DATA_TYPE_SMALLINT  | SMALLINT    |
+| PARAM_TAOS_INT       | TSDB_DATA_TYPE_INT       | INT         |
+| PARAM_TAOS_BIGINT    | TSDB_DATA_TYPE_BIGINT    | BIGINT      |
+| PARAM_TAOS_FLOAT     | TSDB_DATA_TYPE_FLOAT     | FLOAT       |
+| PARAM_TAOS_DOUBLE    | TSDB_DATA_TYPE_DOUBLE    | DOUBLE      |
+| PARAM_TAOS_BINARY    | TSDB_DATA_TYPE_BINARY    | BINARY      |
+| PARAM_TAOS_TIMESTAMP | TSDB_DATA_TYPE_TIMESTAMP | TIMESTAMP   |
+| PARAM_TAOS_NCHAR     | TSDB_DATA_TYPE_NCHAR     | NCHAR       |
+| PARAM_TAOS_UTINYINT  | TSDB_DATA_TYPE_UTINYINT  | UTINYINT    |
+| PARAM_TAOS_USMALLINT | TSDB_DATA_TYPE_USMALLINT | USMALLINT   |
+| PARAM_TAOS_UINT      | TSDB_DATA_TYPE_UINT      | UINT        |
+| PARAM_TAOS_UBIGINT   | TSDB_DATA_TYPE_UBIGINT   | UBIGINT     |
 
 Constants such as `TSDB_DATA_TYPE_INT` are partially equal the PDO predefined constants value, resulting in conflict when judging the data type, so the difference of `6000` is set artificially.
 
