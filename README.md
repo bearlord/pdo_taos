@@ -48,10 +48,16 @@ extension=pdo_taos.so
 
 Create the database on the client.
 
+```sql
+CREATE DATABASE demo;
+```
+
+
+
 ## 1. Connect to TDengine database 
 
 ```php
-$dbh = new PDO("taos:host=127.0.0.1;dbname=test", "root", "taosdata");
+$dbh = new PDO("taos:host=127.0.0.1;dbname=demo", "root", "taosdata");
 ```
 
 
@@ -229,6 +235,30 @@ Placeholder supports parameter names in the form of `:name`, and also in the for
 
 Please forget PDO predefined types such as `PDO::PARAM_BOOL`, `PDO::PARAM_INT`, `PDO::PARAM_STR`, etc. 
 
+Please use the following custom PDO types:
+
+| PDO自定义类型        | TDengine数据类型         | 说明      |
+| -------------------- | ------------------------ | --------- |
+| PARAM_TAOS_NULL      | TSDB_DATA_TYPE_NULL      | NULL      |
+| PARAM_TAOS_BOOL      | TSDB_DATA_TYPE_BOOL      | BOOL      |
+| PARAM_TAOS_TINYINT   | TSDB_DATA_TYPE_TINYINT   | TINYINT   |
+| PARAM_TAOS_SMALLINT  | TSDB_DATA_TYPE_SMALLINT  | SMALLINT  |
+| PARAM_TAOS_INT       | TSDB_DATA_TYPE_INT       | INT       |
+| PARAM_TAOS_BIGINT    | TSDB_DATA_TYPE_BIGINT    | BIGINT    |
+| PARAM_TAOS_FLOAT     | TSDB_DATA_TYPE_FLOAT     | FLOAT     |
+| PARAM_TAOS_DOUBLE    | TSDB_DATA_TYPE_DOUBLE    | DOUBLE    |
+| PARAM_TAOS_BINARY    | TSDB_DATA_TYPE_BINARY    | BINARY    |
+| PARAM_TAOS_TIMESTAMP | TSDB_DATA_TYPE_TIMESTAMP | TIMESTAMP |
+| PARAM_TAOS_NCHAR     | TSDB_DATA_TYPE_NCHAR     | NCHAR     |
+| PARAM_TAOS_UTINYINT  | TSDB_DATA_TYPE_UTINYINT  | UTINYINT  |
+| PARAM_TAOS_USMALLINT | TSDB_DATA_TYPE_USMALLINT | USMALLINT |
+| PARAM_TAOS_UINT      | TSDB_DATA_TYPE_UINT      | UINT      |
+| PARAM_TAOS_UBIGINT   | TSDB_DATA_TYPE_UBIGINT   | UBIGINT   |
+
+Constants such as `TSDB_DATA_TYPE_INT` are partially equal the PDO predefined constants value, resulting in conflict when judging the data type, so the difference of `6000` is set artificially.
+
+Just for illustration, no impact on development. 
+
 
 
 If the field type of the data table can be obtained in advance when performing the insert operation, and then according to the type of the bound data, it can be perfectly compatible, such as:
@@ -236,28 +266,6 @@ If the field type of the data table can be obtained in advance when performing t
 MySQL's field types are INT, SMALLINT, TINYINT, BIGINT, and the binding parameter is PDO::PARAM_INT, which can also be inserted.
 
 However, when the TDengine API executes the INSERT operation, it cannot obtain the field type of the data table in advance, and can only bind parameters if it is perfectly consistent with the fields of the data table.
-
-
-
-The data types starting with PDO::PARAM_TAOS_ are all custom types, corresponding to the TSDB_DATA_TYPE_ data types of TDengine respectively.
-
-
-
-For example:
-
-**PARAM_TAOS_INT => TSDB_DATA_TYPE_INT**
-
-**PARAM_TAOS_FLOAT => TSDB_DATA_TYPE_FLOAT**
-
-**PARAM_TAOS_TIMESTAMP => TSDB_DATA_TYPE_TIMESTAMP**
-
-
-
-But the two sides are not equal.
-
-Constants such as `TSDB_DATA_TYPE_INT` are partially equal the PDO predefined constants value, resulting in conflict when judging the data type, so the difference of `6000` is set artificially.
-
-Just for illustration, no impact on development. 
 
 
 
@@ -317,7 +325,7 @@ array(3) {
     ["v_bigint"]=>
     string(6) "200000"
     ["v_float"]=>
-    string(9) "-71.68000"
+    string(9) "8.08000"
     ["v_double"]=>
     string(11) "8.000008000"
     ["v_binary"]=>
@@ -340,7 +348,7 @@ array(3) {
     ["v_bigint"]=>
     string(6) "200000"
     ["v_float"]=>
-    string(9) "-71.68000"
+    string(9) "8.08000"
     ["v_double"]=>
     string(11) "8.000008000"
     ["v_binary"]=>
@@ -363,7 +371,7 @@ array(3) {
     ["v_bigint"]=>
     string(6) "200000"
     ["v_float"]=>
-    string(9) "-71.68000"
+    string(9) "8.08000"
     ["v_double"]=>
     string(11) "8.000008000"
     ["v_binary"]=>
@@ -421,7 +429,7 @@ No one would have thought that weakly typed PHP requires strong consistency betw
 
 `TDengine` does not support modification operations by default. Data with duplicate timestamps is written to a table that does not support data updates, and **the later written data** will be **discarded**. 
 
-If the user needs the update function of the data, when building the database, he only needs to specify the **update** option of the database as **1**.  
+If the user needs the update function of the data, just specify the **update** option of the database as **1** when building the database.  
 
 Example：
 

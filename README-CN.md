@@ -56,7 +56,7 @@ PDO_TAOS编译时，需要libtaos.so，默认路径为：/usr/lib/libtaos.so，�
 客户端完成创建数据库
 
 ```sql
-CREATE DATABASE demo
+CREATE DATABASE demo;
 ```
 
 
@@ -64,7 +64,7 @@ CREATE DATABASE demo
 ## 1. 连接TDengine数据库
 
 ```php
-$dbh = new PDO("taos:host=127.0.0.1;dbname=test", "root", "taosdata");
+$dbh = new PDO("taos:host=127.0.0.1;dbname=demo", "root", "taosdata");
 ```
 
 
@@ -245,31 +245,41 @@ try {
 
 请忘记：`PDO::PARAM_BOOL `、`PDO::PARAM_INT `, `PDO::PARAM_STR` 等PDO预定义类型。
 
+请使用以下的自定义PDO类型：
+
+| PDO自定义类型        | TDengine数据类型         | 说明      |
+| -------------------- | ------------------------ | --------- |
+| PARAM_TAOS_NULL      | TSDB_DATA_TYPE_NULL      | NULL      |
+| PARAM_TAOS_BOOL      | TSDB_DATA_TYPE_BOOL      | BOOL      |
+| PARAM_TAOS_TINYINT   | TSDB_DATA_TYPE_TINYINT   | TINYINT   |
+| PARAM_TAOS_SMALLINT  | TSDB_DATA_TYPE_SMALLINT  | SMALLINT  |
+| PARAM_TAOS_INT       | TSDB_DATA_TYPE_INT       | INT       |
+| PARAM_TAOS_BIGINT    | TSDB_DATA_TYPE_BIGINT    | BIGINT    |
+| PARAM_TAOS_FLOAT     | TSDB_DATA_TYPE_FLOAT     | FLOAT     |
+| PARAM_TAOS_DOUBLE    | TSDB_DATA_TYPE_DOUBLE    | DOUBLE    |
+| PARAM_TAOS_BINARY    | TSDB_DATA_TYPE_BINARY    | BINARY    |
+| PARAM_TAOS_TIMESTAMP | TSDB_DATA_TYPE_TIMESTAMP | TIMESTAMP |
+| PARAM_TAOS_NCHAR     | TSDB_DATA_TYPE_NCHAR     | NCHAR     |
+| PARAM_TAOS_UTINYINT  | TSDB_DATA_TYPE_UTINYINT  | UTINYINT  |
+| PARAM_TAOS_USMALLINT | TSDB_DATA_TYPE_USMALLINT | USMALLINT |
+| PARAM_TAOS_UINT      | TSDB_DATA_TYPE_UINT      | UINT      |
+| PARAM_TAOS_UBIGINT   | TSDB_DATA_TYPE_UBIGINT   | UBIGINT   |
+
+`TSDB_DATA_TYPE_INT` 等常量，与 PDO 预定义常量的值 部分相等，导致判断数据类型时发生冲突，故人为设定 `6000` 的差值。例如：
+
+```c
+PARAM_TAOS_INT = TSDB_DATA_TYPE_INT + 6000
+```
+
+仅做说明，对开发没有影响。
+
+
+
 如果在执行插入操作时，能**预先**获取数据表的**字段类型**，再根据绑定的**数据的类型**，则可以完美兼容，如：
 
 MySQL的字段类型是 `INT`, `SMALLINT`, `TINYINT`, `BIGINT`，绑定参数为`PDO::PARAM_INT` 也可以插入 。
 
 但是`TDengine` 的API在执行 `INSERT`操作时，不能预先获取数据表的字段类型，只能与数据表的字段完全一致，才可以绑定参数。
-
-
-
-`PDO::PARAM_TAOS_`开头的数据类型，均是自定义的类型，分别对应TDengine的 `TSDB_DATA_TYPE_` 数据类型。
-
-例如：
-
-**PARAM_TAOS_INT => TSDB_DATA_TYPE_INT**
-
-**PARAM_TAOS_FLOAT => TSDB_DATA_TYPE_FLOAT**
-
-**PARAM_TAOS_TIMESTAMP => TSDB_DATA_TYPE_TIMESTAMP**
-
-
-
-但是前后两者并不相等。
-
-`TSDB_DATA_TYPE_INT` 等常量，与 PDO 预定义常量的值 部分相等，导致判断数据类型时 发生冲突，故人为设定 `6000` 的差值。
-
-仅做说明，对开发没有影响。
 
 
 
@@ -329,7 +339,7 @@ array(3) {
     ["v_bigint"]=>
     string(6) "200000"
     ["v_float"]=>
-    string(9) "-71.68000"
+    string(9) "8.08000"
     ["v_double"]=>
     string(11) "8.000008000"
     ["v_binary"]=>
@@ -352,7 +362,7 @@ array(3) {
     ["v_bigint"]=>
     string(6) "200000"
     ["v_float"]=>
-    string(9) "-71.68000"
+    string(9) "8.08000"
     ["v_double"]=>
     string(11) "8.000008000"
     ["v_binary"]=>
@@ -375,7 +385,7 @@ array(3) {
     ["v_bigint"]=>
     string(6) "200000"
     ["v_float"]=>
-    string(9) "-71.68000"
+    string(9) "8.08000"
     ["v_double"]=>
     string(11) "8.000008000"
     ["v_binary"]=>
