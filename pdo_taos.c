@@ -11,7 +11,6 @@
 #include "pdo/php_pdo_driver.h"
 #include "php_pdo_taos.h"
 #include "php_pdo_taos_int.h"
-#include <stdio.h>
 
 
 /* {{{ pdo_taos_functions[] */

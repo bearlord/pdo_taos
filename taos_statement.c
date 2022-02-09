@@ -16,23 +16,6 @@
 #include <netinet/in.h>
 #endif
 
-struct {
-    int64_t long_value;
-    int64_t ts_value;
-    uint64_t ulong_value;
-    int32_t int_value;
-    uint32_t uint_value;
-    int16_t small_value;
-    uint16_t usmall_value;
-    int8_t tiny_value;
-    uint8_t utiny_value;
-    float float_value;
-    double double_value;
-    char binary_value[10];
-    char nchar_value[32];
-} v = {0};
-
-
 /* }}} */
 
 static int pdo_pdo_taos_stmt_execute_prepared(pdo_stmt_t *stmt) /* {{{ */
