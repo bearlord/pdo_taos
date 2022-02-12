@@ -4,6 +4,7 @@
 # define PHP_PDO_TAOS_H
 
 extern zend_module_entry pdo_taos_module_entry;
+extern int taos_inited;
 # define phpext_pdo_taos_ptr &pdo_taos_module_entry
 
 # define PHP_PDO_TAOS_VERSION "0.2.1"

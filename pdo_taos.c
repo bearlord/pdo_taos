@@ -13,6 +13,7 @@
 #include "php_pdo_taos_int.h"
 #include <stdio.h>
 
+int taos_inited = 0;
 
 /* {{{ pdo_taos_functions[] */
 static const zend_function_entry pdo_taos_functions[] = {
@@ -79,7 +80,9 @@ PHP_MINIT_FUNCTION(pdo_taos)
  */
 PHP_MSHUTDOWN_FUNCTION(pdo_taos)
 {
-    taos_cleanup();
+    if (taos_inited) {
+        taos_cleanup();
+    }
     php_pdo_unregister_driver(&pdo_taos_driver);
     return SUCCESS;
 }

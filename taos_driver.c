@@ -408,6 +408,7 @@ static int pdo_taos_handle_factory(pdo_dbh_t *dbh, zval *driver_options) /* {{{ 
         zend_throw_exception_ex(NULL, 0, "SQLSTATE[%s] [%s] %s", "HY000", "0x000B", "Unable to establish connection");
         goto cleanup;
     }
+    taos_inited = 1;
 
     H->attached = 1;
 
