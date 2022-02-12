@@ -1,5 +1,4 @@
 /* pdo_taos extension for PHP (c) 2021 bearlord 565364226@qq.com */
-
 #ifndef PHP_PDO_TAOS_H
 # define PHP_PDO_TAOS_H
 

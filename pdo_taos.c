@@ -81,6 +81,7 @@ PHP_MSHUTDOWN_FUNCTION(pdo_taos)
 {
     if (taos_inited) {
         taos_cleanup();
+        taos_inited = 0;
     }
     php_pdo_unregister_driver(&pdo_taos_driver);
     return SUCCESS;
