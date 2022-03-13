@@ -16,33 +16,6 @@
 #include "php_pdo_taos_int.h"
 #include "zend_exceptions.h"
 
-static char *_pdo_taos_trim_message(const char *message, int persistent)
-{
-    register int i = strlen(message) - 1;
-    char *tmp;
-
-    if (i > 1 && (message[i - 1] == '\r' || message[i - 1] == '\n') && message[i] == '.') {
-        --i;
-    }
-    while (i > 0 && (message[i] == '\r' || message[i] == '\n')) {
-        --i;
-    }
-    ++i;
-    tmp = pemalloc(i + 1, persistent);
-    memcpy(tmp, message, i);
-    tmp[i] = '\0';
-
-    return tmp;
-}
-
-static zend_string *_pdo_taos_escape_credentials(char *str)
-{
-    if (str) {
-        return php_addcslashes_str(str, strlen(str), "\\'", sizeof("\\'"));
-    }
-    return NULL;
-}
-
 /* {{{ */
 int _pdo_taos_error(pdo_dbh_t *dbh, pdo_stmt_t *stmt, int errcode, const char *sqlstate,
                     const char *msg, const char *file, int line)
