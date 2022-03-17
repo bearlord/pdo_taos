@@ -17,8 +17,7 @@
 #include "zend_exceptions.h"
 
 /* {{{ */
-int _pdo_taos_error(pdo_dbh_t *dbh, pdo_stmt_t *stmt, int errcode, const char *sqlstate,
-                    const char *msg, const char *file, int line)
+int _pdo_taos_error(pdo_dbh_t *dbh, pdo_stmt_t *stmt, int errcode, const char *sqlstate, const char *msg, const char *file, int line)
 {
     pdo_taos_db_handle *H = (pdo_taos_db_handle *) dbh->driver_data;
     pdo_error_type *pdo_err = stmt ? &stmt->error_code : &dbh->error_code;
@@ -106,7 +105,8 @@ static int taos_handle_closer(pdo_dbh_t *dbh) /* {{{ */
 /* }}} */
 
 /* {{{ taos_handle_preparer */
-static int taos_handle_preparer(pdo_dbh_t *dbh, const char *sql, size_t sql_len, pdo_stmt_t *stmt, zval *driver_options)
+static int
+taos_handle_preparer(pdo_dbh_t *dbh, const char *sql, size_t sql_len, pdo_stmt_t *stmt, zval *driver_options)
 {
     pdo_taos_db_handle *H = (pdo_taos_db_handle *) dbh->driver_data;
     pdo_taos_stmt *S = ecalloc(1, sizeof(pdo_taos_stmt));
@@ -196,8 +196,8 @@ static zend_long taos_handle_doer(pdo_dbh_t *dbh, const char *sql, size_t sql_le
 /* }}} */
 
 /* {{{ taos_handle_quoter */
-static int taos_handle_quoter(pdo_dbh_t *dbh, const char *unquoted, size_t unquotedlen, char **quoted, size_t *quotedlen,
-                   enum pdo_param_type paramtype)
+static int
+taos_handle_quoter(pdo_dbh_t *dbh, const char *unquoted, size_t unquotedlen, char **quoted, size_t *quotedlen, enum pdo_param_type paramtype)
 {
     int qcount = 0;
     char const *cu, *l, *r;
@@ -231,6 +231,7 @@ static int taos_handle_quoter(pdo_dbh_t *dbh, const char *unquoted, size_t unquo
 
     return 1;
 }
+
 /* }}} */
 
 static char *pdo_taos_last_insert_id(pdo_dbh_t *dbh, const char *name, size_t *len)
@@ -263,6 +264,7 @@ static int pdo_taos_check_liveness(pdo_dbh_t *dbh)
 {
     return SUCCESS;
 }
+
 /* }}} */
 
 static int taos_handle_in_transaction(pdo_dbh_t *dbh)
@@ -287,7 +289,7 @@ static int taos_handle_rollback(pdo_dbh_t *dbh)
 
 
 static const zend_function_entry dbh_methods[] = {
-    PHP_FE_END
+        PHP_FE_END
 };
 
 static const zend_function_entry *pdo_taos_get_driver_methods(pdo_dbh_t *dbh, int kind)
@@ -315,25 +317,48 @@ static int pdo_taos_set_attr(pdo_dbh_t *dbh, zend_long attr, zval *val)
             return 0;
     }
 }
+
 /* }}} */
 
-static const struct pdo_dbh_methods taos_methods = {
-    taos_handle_closer,
-    taos_handle_preparer,
-    taos_handle_doer,
-    taos_handle_quoter,
-    NULL, /* handle begin */
-    NULL, /* handle commit */
-    NULL, /* handle rollback */
-    pdo_taos_set_attr,
-    NULL, /* last_insert_id */
-    pdo_taos_fetch_error_func,
-    pdo_taos_get_attribute,
-    NULL,    /* check_liveness */
-    pdo_taos_get_driver_methods,  /* get_driver_methods */
-    NULL,
-    taos_handle_in_transaction, /* in_transaction */
+
+#if PHP_VERSION_ID < 70300
+static struct pdo_dbh_methods taos_methods = {
+        taos_handle_closer,
+        taos_handle_preparer,
+        taos_handle_doer,
+        taos_handle_quoter,
+        NULL, /* handle begin */
+        NULL, /* handle commit */
+        NULL, /* handle rollback */
+        pdo_taos_set_attr,
+        NULL, /* last_insert_id */
+        pdo_taos_fetch_error_func,
+        pdo_taos_get_attribute,
+        NULL,    /* check_liveness */
+        pdo_taos_get_driver_methods,  /* get_driver_methods */
+        NULL,
+        taos_handle_in_transaction, /* in_transaction */
 };
+#else
+static const struct pdo_dbh_methods taos_methods = {
+        taos_handle_closer,
+        taos_handle_preparer,
+        taos_handle_doer,
+        taos_handle_quoter,
+        NULL, /* handle begin */
+        NULL, /* handle commit */
+        NULL, /* handle rollback */
+        pdo_taos_set_attr,
+        NULL, /* last_insert_id */
+        pdo_taos_fetch_error_func,
+        pdo_taos_get_attribute,
+        NULL,    /* check_liveness */
+        pdo_taos_get_driver_methods,  /* get_driver_methods */
+        NULL,
+        taos_handle_in_transaction, /* in_transaction */
+};
+#endif
+
 
 /* {{{ pdo_taos_handle_factory */
 static int pdo_taos_handle_factory(pdo_dbh_t *dbh, zval *driver_options) /* {{{ */
@@ -391,7 +416,7 @@ static int pdo_taos_handle_factory(pdo_dbh_t *dbh, zval *driver_options) /* {{{ 
 
     ret = 1;
 
-cleanup:
+    cleanup:
     for (i = 0; i < sizeof(vars) / sizeof(vars[0]); i++) {
         if (vars[i].freeme) {
             efree(vars[i].optval);
@@ -405,9 +430,17 @@ cleanup:
 
     return ret;
 }
-/* }}} */
 
+/* }}} */
+#if PHP_VERSION_ID < 70300
+pdo_driver_t pdo_taos_driver = {
+        PDO_DRIVER_HEADER(taos),
+        pdo_taos_handle_factory
+};
+#else
 const pdo_driver_t pdo_taos_driver = {
     PDO_DRIVER_HEADER(taos),
     pdo_taos_handle_factory
 };
+#endif
+

@@ -542,6 +542,21 @@ static int pdo_taos_stmt_cursor_closer(pdo_stmt_t *stmt)
     return 1;
 }
 
+#if PHP_VERSION_ID < 70300
+struct pdo_stmt_methods taos_stmt_methods = {
+    pdo_taos_stmt_dtor,             /* free the statement handle */
+    pdo_taos_stmt_execute,          /* start the query */
+    pdo_taos_stmt_fetch,            /* next row */
+    pdo_taos_stmt_describe,         /* column information */
+    pdo_taos_stmt_get_col,          /* retrieves pointer and size of the value for a column */
+    pdo_taos_stmt_param_hook,       /* param hook */
+    NULL,                           /* set_attr */
+    NULL,                           /* get_attr */
+    pdo_taos_stmt_get_column_meta,  /* retrieves meta data for a numbered column */
+    NULL,                           /* next_rowset */
+    NULL                            /* cursor_closer */
+};
+#else
 const struct pdo_stmt_methods taos_stmt_methods = {
     pdo_taos_stmt_dtor,             /* free the statement handle */
     pdo_taos_stmt_execute,          /* start the query */
@@ -555,3 +570,4 @@ const struct pdo_stmt_methods taos_stmt_methods = {
     NULL,                           /* next_rowset */
     NULL                            /* cursor_closer */
 };
+#endif

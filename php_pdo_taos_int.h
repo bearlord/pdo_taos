@@ -61,7 +61,13 @@ typedef struct {
     zend_ulong *out_length;
 } pdo_taos_stmt;
 
+#if PHP_VERSION_ID < 70300
+extern pdo_driver_t pdo_taos_driver;
+extern struct pdo_stmt_methods taos_stmt_methods;
+#else
 extern const pdo_driver_t pdo_taos_driver;
+extern const struct pdo_stmt_methods taos_stmt_methods;
+#endif
 
 extern int
 _pdo_taos_error(pdo_dbh_t *dbh, pdo_stmt_t *stmt, int errcode, const char *sqlstate, const char *msg, const char *file,
@@ -71,26 +77,6 @@ _pdo_taos_error(pdo_dbh_t *dbh, pdo_stmt_t *stmt, int errcode, const char *sqlst
 #define pdo_taos_error_msg(s, e, m)    _pdo_taos_error(s, NULL, e, NULL, m, __FILE__, __LINE__)
 #define pdo_taos_error_stmt(s, e, z)    _pdo_taos_error(s->dbh, s, e, z, NULL, __FILE__, __LINE__)
 #define pdo_taos_error_stmt_msg(s, e, m)    _pdo_taos_error(s->dbh, s, e, NULL, m, __FILE__, __LINE__)
-
 #define pdo_taos_convert_errno(errno) ((int32_t) (errno > 0 ? errno : errno + 0x80000000))
-
-extern const struct pdo_stmt_methods taos_stmt_methods;
-
-#define pdo_taos_sqlstate(r) (const char *)NULL
-
-enum {
-    PDO_TAOS_ATTR_DISABLE_NATIVE_PREPARED_STATEMENT = PDO_ATTR_DRIVER_SPECIFIC,
-};
-
-struct pdo_taos_lob_self {
-    pdo_dbh_t *dbh;
-    TAOS *conn;
-    int lfd;
-};
-
-
-php_stream *pdo_taos_create_lob_stream(zval *pdh, int lfd);
-
-extern const php_stream_ops pdo_taos_lob_stream_ops;
 
 #endif /* PHP_PDO_TAOS_INT_H */
