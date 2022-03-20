@@ -1,6 +1,6 @@
 English | [简体中文](./README-CN.md)
 
-PDO_TAOS is a PDO driver for [TDengine](https://github.com/taosdata/TDengine) database.
+PDO_TAOS is a [TDengine](https://github.com/taosdata/TDengine) driver for PDO.
 
 [TDengine ](https://github.com/taosdata/TDengine)has agreed to use library files to develop PHP extension.
 
