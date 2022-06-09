@@ -99,8 +99,6 @@ taos_handle_preparer(pdo_dbh_t *dbh, const char *sql, size_t sql_len, pdo_stmt_t
     int ret;
     char *nsql = NULL;
     size_t nsql_len = 0;
-    int emulate = 0;
-    int execute_only = 0;
     int num_params = 0;
 
     S->H = H;

@@ -108,8 +108,6 @@ taos_handle_preparer(pdo_dbh_t *dbh, zend_string *sql, pdo_stmt_t *stmt, zval *d
     pdo_taos_stmt *S = ecalloc(1, sizeof(pdo_taos_stmt));
     int ret;
     zend_string *nsql = NULL;
-    int emulate = 0;
-    int execute_only = 0;
     int num_params = 0;
 
     S->H = H;
