@@ -2,19 +2,6 @@
 #include "config.h"
 #endif
 
-#include "php.h"
-#include "php_ini.h"
-#include "ext/standard/info.h"
-#include "ext/standard/php_string.h"
-#include "main/php_network.h"
-#include "pdo/php_pdo.h"
-#include "pdo/php_pdo_driver.h"
-#include "pdo/php_pdo_error.h"
-#include "ext/standard/file.h"
-#include "php_pdo_taos.h"
-#include "php_pdo_taos_int.h"
-#include "zend_exceptions.h"
-
 /* {{{ */
 int _pdo_taos_error(pdo_dbh_t *dbh, pdo_stmt_t *stmt, int errcode, const char *sqlstate, const char *msg, const char *file, int line)
 {

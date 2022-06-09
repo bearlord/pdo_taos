@@ -2,19 +2,6 @@
 #include "config.h"
 #endif
 
-#include "php.h"
-#include "php_ini.h"
-#include "ext/standard/info.h"
-#include "pdo/php_pdo.h"
-#include "pdo/php_pdo_driver.h"
-#include "php_pdo_taos.h"
-#include "php_pdo_taos_int.h"
-#include "ttype.h"
-
-#if HAVE_NETINET_IN_H
-#include <netinet/in.h>
-#endif
-
 /* }}} */
 
 static int pdo_pdo_taos_stmt_execute_prepared(pdo_stmt_t *stmt) /* {{{ */
@@ -251,6 +238,7 @@ static int pdo_taos_stmt_param_hook(pdo_stmt_t *stmt, struct pdo_bound_param_dat
 
                     case TSDB_DATA_TYPE_BINARY + 6000:
                     case TSDB_DATA_TYPE_NCHAR + 6000:
+                    case TSDB_DATA_TYPE_JSON + 6000:
                         b->buffer_type = PDO_PARAM_TYPE(param->param_type) - 6000;
                         b->buffer = Z_STRVAL_P(parameter);
                         b->buffer_length = Z_STRLEN_P(parameter);
@@ -488,7 +476,8 @@ static int pdo_taos_stmt_get_col(pdo_stmt_t *stmt, int colno, char **ptr, unsign
                 break;
 
             case TSDB_DATA_TYPE_BINARY:
-            case TSDB_DATA_TYPE_NCHAR: {
+            case TSDB_DATA_TYPE_NCHAR:
+            case TSDB_DATA_TYPE_JSON: {
                 int32_t charLen;
                 charLen = varDataLen((char *) row[colno] - VARSTR_HEADER_SIZE);
                 *ptr = (char *) row[colno];
