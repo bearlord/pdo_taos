@@ -96,7 +96,7 @@ PHP_MINFO_FUNCTION(pdo_taos)
     php_info_print_table_start();
     php_info_print_table_header(2, "PDO Driver for TAOS", "enabled");
 
-    php_info_print_table_row(2, "Module version", pdo_taos_module_entry.version);
+    php_info_print_table_row(2, "TDengine(libtaos) Version ", taos_get_client_info());
 
     php_info_print_table_end();
 }
