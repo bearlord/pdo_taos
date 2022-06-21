@@ -278,7 +278,7 @@ static PHP_METHOD(PDO, getServerInfo)
     pdo_taos_db_handle *H;
     char *info;
 
-    dbh = Z_PDO_DBH_P(ZEND_THIS);
+    dbh = Z_PDO_DBH_P(getThis());
     PDO_CONSTRUCT_CHECK;
 
     H = (pdo_taos_db_handle *) dbh->driver_data;
