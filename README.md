@@ -179,7 +179,6 @@ Be sure to call the `exec` method, not the `query` method.
 ### 3.2 PDO::prepare
 
 ```php
-<?php
 try {
     $dbh = new PDO("taos:host=127.0.0.1;dbname=demo", "root", "taosdata");
 
@@ -217,7 +216,6 @@ try {
 } catch (Exception $e) {
     printf("%d, %s\n", $e->getCode(), $e->getMessage());
 }
-?>
 ```
  `$result` returns true if execution succeeds, false if fails.  
 
@@ -290,7 +288,6 @@ Two ways to query data:
 ### 4.1 PDO::query
 
 ```php
-<?php
 $dbh = new PDO("taos:host=127.0.0.1;dbname=demo", "root", "taosdata");
 
 $t1 = strtotime("2022-01-27 16:36:12");
@@ -304,7 +301,6 @@ $sth = $dbh->query($sql);
 
 $result = $sth->fetchAll(PDO::FETCH_ASSOC);
 var_dump($result);
-?>
 ```
 
 The execution result is as follows:  
@@ -390,7 +386,6 @@ Note: `created_timestamp` uses the `timestamp` type when querying, but the query
 ### 4.2 PDO::prepare
 
 ```php
-<?php
 $dbh = new PDO("taos:host=127.0.0.1;dbname=demo", "root", "taosdata");
 
 $t1 = strtotime("2022-01-27 16:36:12");
@@ -411,7 +406,6 @@ $sth->bindParam("end_time", $end_time, PDO::PARAM_TAOS_TIMESTAMP);
 $sth->execute();
 $result = $sth->fetchAll(PDO::FETCH_ASSOC);
 var_dump($result);
-?>
 ```
 
 Note: `created_timestamp` uses the `timestamp` type when querying, but the query result formats the `time type`, which is consistent with the `TDengine client` query results.  
@@ -473,7 +467,6 @@ If the device logs are saved as multiple databases separated by `year`. It will 
 Example：
 
 ```php
-<?php
 try {
     $dbh = new PDO("taos:host=127.0.0.1", "root", "taosdata");
     
@@ -514,7 +507,5 @@ try {
 } catch (Exception $e) {
     printf("%d, %s\n", $e->getCode(), $e->getMessage());
 }
-
-?>
 ```
 

@@ -188,7 +188,6 @@ var_dump($result);
 ### 3.2 PDO::prepare预处理方式
 
 ```php
-<?php
 try {
     $dbh = new PDO("taos:host=127.0.0.1;dbname=demo", "root", "taosdata");
 
@@ -226,7 +225,6 @@ try {
 } catch (Exception $e) {
     printf("%d, %s\n", $e->getCode(), $e->getMessage());
 }
-?>
 ```
 
 执行成功，`$result` 返回 true，执行失败，返回false。
@@ -304,7 +302,6 @@ MySQL的字段类型是 `INT`, `SMALLINT`, `TINYINT`, `BIGINT`，绑定参数为
 ### 4.1 PDO::query方法
 
 ```php
-<?php
 $dbh = new PDO("taos:host=127.0.0.1;dbname=demo", "root", "taosdata");
 
 $t1 = strtotime("2022-01-27 16:36:12");
@@ -318,7 +315,6 @@ $sth = $dbh->query($sql);
 
 $result = $sth->fetchAll(PDO::FETCH_ASSOC);
 var_dump($result);
-?>
 ```
 
 执行结果如下：
@@ -406,7 +402,6 @@ array(3) {
 ### 4.2 PDO::prepare方法
 
 ```php
-<?php
 $dbh = new PDO("taos:host=127.0.0.1;dbname=demo", "root", "taosdata");
 
 $t1 = strtotime("2022-01-27 16:36:12");
@@ -427,7 +422,6 @@ $sth->bindParam("end_time", $end_time, PDO::PARAM_TAOS_TIMESTAMP);
 $sth->execute();
 $result = $sth->fetchAll(PDO::FETCH_ASSOC);
 var_dump($result);
-?>
 ```
 
 
@@ -487,7 +481,6 @@ $dbh = new PDO("taos:host=127.0.0.1", "root", "taosdata");
 例如：
 
 ```php
-<?php
 try {
     $dbh = new PDO("taos:host=127.0.0.1", "root", "taosdata");
     
@@ -528,7 +521,5 @@ try {
 } catch (Exception $e) {
     printf("%d, %s\n", $e->getCode(), $e->getMessage());
 }
-
-?>
 ```
 
