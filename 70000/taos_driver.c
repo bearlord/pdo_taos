@@ -271,36 +271,7 @@ static int taos_handle_rollback(pdo_dbh_t *dbh)
     return 1;
 }
 
-/* {{{ proto string PDO::getServerInfo() */
-static PHP_METHOD(PDO, getServerInfo)
-{
-    pdo_dbh_t *dbh;
-    pdo_taos_db_handle *H;
-    char *info;
-
-    dbh = Z_PDO_DBH_P(getThis());
-    PDO_CONSTRUCT_CHECK;
-
-    H = (pdo_taos_db_handle *) dbh->driver_data;
-    info = taos_get_server_info(H->server);
-
-    RETURN_STRING(info);
-}
-/* }}} */
-
-/* {{{ proto string PDO::getClientInfo() */
-static PHP_METHOD(PDO, getClientInfo)
-{
-    char *info;
-    info = taos_get_client_info();
-
-    RETURN_STRING(info);
-}
-/* }}} */
-
 static const zend_function_entry dbh_methods[] = {
-        PHP_ME(PDO, getServerInfo, NULL, ZEND_ACC_PUBLIC)
-        PHP_ME(PDO, getClientInfo, NULL, ZEND_ACC_PUBLIC)
         PHP_FE_END
 };
 

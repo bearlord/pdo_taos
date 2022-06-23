@@ -460,9 +460,11 @@ static int pdo_taos_stmt_get_col(pdo_stmt_t *stmt, int colno, zval *result, enum
                 ZVAL_STRINGL_FAST(result, value, strlen(value));
                 break;
 
+#ifdef TSDB_DATA_TYPE_JSON
+            case TSDB_DATA_TYPE_JSON:
+#endif
             case TSDB_DATA_TYPE_BINARY:
-            case TSDB_DATA_TYPE_NCHAR:
-            case TSDB_DATA_TYPE_JSON: {
+            case TSDB_DATA_TYPE_NCHAR: {
                 int32_t charLen;
                 charLen = varDataLen((char *) row[colno] - VARSTR_HEADER_SIZE);
                 ZVAL_STRINGL_FAST(result, (char *) row[colno], charLen);
@@ -470,15 +472,6 @@ static int pdo_taos_stmt_get_col(pdo_stmt_t *stmt, int colno, zval *result, enum
                 break;
         }
 
-
-
-//        size_t length = S->out_length[colno];
-//        if (length > S->bound_result[colno].buffer_length) {
-//            /* mysql lied about the column width */
-//            strcpy(stmt->error_code, "01004"); /* truncated */
-//            length = S->out_length[colno] = S->bound_result[colno].buffer_length;
-//        }
-//        ZVAL_STRINGL_FAST(result, value, length);
         return 1;
     }
 

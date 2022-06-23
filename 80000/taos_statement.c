@@ -236,9 +236,11 @@ static int pdo_taos_stmt_param_hook(pdo_stmt_t *stmt, struct pdo_bound_param_dat
                         return 1;
                         break;
 
+#ifdef TSDB_DATA_TYPE_JSON
+                    case TSDB_DATA_TYPE_JSON:
+#endif
                     case TSDB_DATA_TYPE_BINARY + 6000:
                     case TSDB_DATA_TYPE_NCHAR + 6000:
-                    case TSDB_DATA_TYPE_JSON + 6000:
                         b->buffer_type = PDO_PARAM_TYPE(param->param_type) - 6000;
                         b->buffer = Z_STRVAL_P(parameter);
                         b->buffer_length = Z_STRLEN_P(parameter);

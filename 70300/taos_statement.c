@@ -475,9 +475,11 @@ static int pdo_taos_stmt_get_col(pdo_stmt_t *stmt, int colno, char **ptr, unsign
                 *len = strlen(value);
                 break;
 
+#ifdef TSDB_DATA_TYPE_JSON
+            case TSDB_DATA_TYPE_JSON:
+#endif
             case TSDB_DATA_TYPE_BINARY:
-            case TSDB_DATA_TYPE_NCHAR:
-            case TSDB_DATA_TYPE_JSON: {
+            case TSDB_DATA_TYPE_NCHAR: {
                 int32_t charLen;
                 charLen = varDataLen((char *) row[colno] - VARSTR_HEADER_SIZE);
                 *ptr = (char *) row[colno];
