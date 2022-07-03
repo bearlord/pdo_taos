@@ -376,6 +376,10 @@ static int pdo_taos_stmt_get_col(pdo_stmt_t *stmt, int colno, char **ptr, unsign
         char value[S->out_length[colno]];
         TAOS_ROW row = S->current_data;
 
+        if (!row[colno]) {
+            return 1;
+        }
+
         switch (S->fields[colno].type) {
             case TSDB_DATA_TYPE_NULL:
                 break;
