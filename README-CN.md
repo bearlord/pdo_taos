@@ -112,7 +112,7 @@ var_dump($result);
 taos> USE DEMO;
 Database changed.
 
-taos> SHOW CREATE TABLE device_log_1000;
+taos> SHOW CREATE TABLE device_log_100;
              Table              |          Create Table          |
 ==================================================================
  device_log_1000                | create table device_log_100... |
@@ -220,7 +220,7 @@ try {
     $result = $sth->execute();
     var_dump($result);
 
-    $rowCount = $sth->rowCount()
+    $rowCount = $sth->rowCount();
     var_dump($rowCount);
 } catch (Exception $e) {
     printf("%d, %s\n", $e->getCode(), $e->getMessage());
