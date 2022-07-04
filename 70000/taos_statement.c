@@ -451,7 +451,7 @@ static int pdo_taos_stmt_get_col(pdo_stmt_t *stmt, int colno, char **ptr, unsign
                 int32_t precision;
                 time_t tt;
                 struct tm *tp;
-                char time_str[30] = {0};
+                char time_str[20] = {0};
                 char time_value[30] = {0};
 
                 precision = taos_result_precision(S->result);
