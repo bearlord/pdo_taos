@@ -6,7 +6,7 @@ extern zend_module_entry pdo_taos_module_entry;
 extern int taos_inited;
 # define phpext_pdo_taos_ptr &pdo_taos_module_entry
 
-# define PHP_PDO_TAOS_VERSION "1.0.1"
+# define PHP_PDO_TAOS_VERSION "1.0.2"
 
 # if defined(ZTS) && defined(COMPILE_DL_PDO_TAOS)
 ZEND_TSRMLS_CACHE_EXTERN()
