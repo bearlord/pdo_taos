@@ -436,8 +436,8 @@ static int pdo_taos_stmt_get_col(pdo_stmt_t *stmt, int colno, zval *result, enum
                 int32_t precision;
                 time_t tt;
                 struct tm *tp;
-                char time_str[20] = {0};
-                char time_value[30] = {0};
+                char time_str[30] = {0};
+                char time_value[50] = {0};
 
                 precision = taos_result_precision(S->result);
                 if (precision == TSDB_TIME_PRECISION_MILLI) {
@@ -450,11 +450,11 @@ static int pdo_taos_stmt_get_col(pdo_stmt_t *stmt, int colno, zval *result, enum
                 tp = localtime(&tt);
                 strftime(time_str, 64, "%Y-%m-%d %H:%M:%S", tp);
                 if (precision == TSDB_TIME_PRECISION_MILLI) {
-                    sprintf(time_value, "%s.%03ld", time_str, (int32_t)(*((int64_t *) row[colno]) % 1000));
+                    sprintf(time_value, "%s.%03d", time_str, (int32_t)(*((int64_t *) row[colno]) % 1000));
                 } else if (precision == TSDB_TIME_PRECISION_MICRO) {
-                    sprintf(time_value, "%s.%06ld", time_str, (int32_t)(*((int64_t *) row[colno]) % 1000000));
+                    sprintf(time_value, "%s.%06d", time_str, (int32_t)(*((int64_t *) row[colno]) % 1000000));
                 } else {
-                    sprintf(time_value, "%s.%09ld", time_str, (int32_t)(*((int64_t *) row[colno]) % 1000000000));
+                    sprintf(time_value, "%s.%09d", time_str, (int32_t)(*((int64_t *) row[colno]) % 1000000000));
                 }
                 ZVAL_STRINGL_FAST(result, time_value, strlen(time_value));
             }
