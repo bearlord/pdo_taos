@@ -5,7 +5,7 @@
 #include <taoserror.h>
 #include <php.h>
 
-#define PDO_TAOS_PARAM_BIND TAOS_BIND
+#define PDO_TAOS_PARAM_BIND TAOS_MULTI_BIND
 #define PHP_PDO_TAOS_CONNECTION_FAILURE_SQLSTATE "08006"
 
 typedef struct {
@@ -40,8 +40,8 @@ typedef struct {
     TAOS_RES *result;
     TAOS_STMT *stmt;
     TAOS_FIELD *fields;
-    TAOS_BIND *params;
-    TAOS_BIND *bound_result;
+    TAOS_MULTI_BIND *params;
+    TAOS_MULTI_BIND *bound_result;
     TAOS_ROW current_data;
     int *current_lengths;
     int num_params;

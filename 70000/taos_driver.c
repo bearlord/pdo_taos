@@ -139,7 +139,7 @@ taos_handle_preparer(pdo_dbh_t *dbh, const char *sql, size_t sql_len, pdo_stmt_t
     S->num_params = num_params;
     if (S->num_params) {
         S->params_given = 0;
-        S->params = ecalloc(S->num_params, sizeof(TAOS_BIND));
+        S->params = ecalloc(S->num_params, sizeof(TAOS_MULTI_BIND));
         S->in_null = ecalloc(S->num_params, sizeof(zend_bool));
         S->in_length = ecalloc(S->num_params, sizeof(zend_ulong));
     }

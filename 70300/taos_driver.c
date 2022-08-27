@@ -135,11 +135,18 @@ taos_handle_preparer(pdo_dbh_t *dbh, const char *sql, size_t sql_len, pdo_stmt_t
         return 0;
     }
 
-    taos_stmt_num_params(S->stmt, &num_params);
+    if (taos_stmt_num_params(S->stmt, &num_params)) {
+        pdo_taos_error_stmt_msg(stmt, pdo_taos_convert_errno(code), taos_stmt_errstr(S->stmt));
+        if (nsql) {
+            efree(nsql);
+        }
+        return 0;
+    }
+
     S->num_params = num_params;
     if (S->num_params) {
         S->params_given = 0;
-        S->params = ecalloc(S->num_params, sizeof(TAOS_BIND));
+        S->params = ecalloc(S->num_params, sizeof(TAOS_MULTI_BIND));
         S->in_null = ecalloc(S->num_params, sizeof(zend_bool));
         S->in_length = ecalloc(S->num_params, sizeof(zend_ulong));
     }

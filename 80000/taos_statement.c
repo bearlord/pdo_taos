@@ -23,7 +23,7 @@ static int pdo_pdo_taos_stmt_execute_prepared(pdo_stmt_t *stmt) /* {{{ */
     }
 
     if (S->params) {
-        memset(S->params, 0, S->num_params * sizeof(TAOS_BIND));
+        memset(S->params, 0, S->num_params * sizeof(TAOS_MULTI_BIND));
     }
 
     int code = taos_stmt_execute(S->stmt);
@@ -49,7 +49,7 @@ static int pdo_pdo_taos_stmt_execute_prepared(pdo_stmt_t *stmt) /* {{{ */
                 efree(S->out_null);
                 efree(S->out_length);
             }
-            S->bound_result = ecalloc(stmt->column_count, sizeof(TAOS_BIND));
+            S->bound_result = ecalloc(stmt->column_count, sizeof(TAOS_MULTI_BIND));
             S->out_null = ecalloc(stmt->column_count, sizeof(zend_bool));
             S->out_length = ecalloc(stmt->column_count, sizeof(zend_ulong));
 
@@ -157,7 +157,7 @@ static const char *const pdo_param_event_names[] =
 static int pdo_taos_stmt_param_hook(pdo_stmt_t *stmt, struct pdo_bound_param_data *param, enum pdo_param_event event_type)
 {
     zval *parameter;
-    TAOS_BIND *b;
+    TAOS_MULTI_BIND *b;
     pdo_taos_stmt *S = (pdo_taos_stmt *) stmt->driver_data;
 
     if (S->stmt && param->is_param) {
