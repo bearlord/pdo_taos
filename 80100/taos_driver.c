@@ -143,7 +143,14 @@ taos_handle_preparer(pdo_dbh_t *dbh, zend_string *sql, pdo_stmt_t *stmt, zval *d
         return false;
     }
 
-    taos_stmt_num_params(S->stmt, &num_params);
+    if (taos_stmt_num_params(S->stmt, &num_params)) {
+        pdo_taos_error_stmt_msg(stmt, pdo_taos_convert_errno(code), taos_stmt_errstr(S->stmt));
+        if (nsql) {
+            efree(nsql);
+        }
+        return 0;
+    }
+
     S->num_params = num_params;
     if (S->num_params) {
         S->params_given = 0;

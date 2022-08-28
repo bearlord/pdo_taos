@@ -60,9 +60,10 @@ static int pdo_pdo_taos_stmt_execute_prepared(pdo_stmt_t *stmt) /* {{{ */
                 S->out_length[i] = S->bound_result[i].buffer_length;
 
                 S->bound_result[i].buffer = emalloc(S->bound_result[i].buffer_length);
-                S->bound_result[i].is_null = &S->out_null[i];
-                S->bound_result[i].length = &S->out_length[i];
+                S->bound_result[i].is_null = (char *) &S->out_null[i];
+                S->bound_result[i].length = (int32_t *) &S->out_length[i];
                 S->bound_result[i].buffer_type = TSDB_DATA_TYPE_BINARY;
+                S->bound_result[i].num = 1;
             }
         }
     }
@@ -172,8 +173,9 @@ static int pdo_taos_stmt_param_hook(pdo_stmt_t *stmt, struct pdo_bound_param_dat
 
                 b = &S->params[param->paramno];
                 param->driver_data = b;
-                b->is_null = &S->in_null[param->paramno];
-                b->length = &S->in_length[param->paramno];
+                b->is_null = (char *) &S->in_null[param->paramno];
+                b->length = (int32_t *)&S->in_length[param->paramno];
+                b->num = 1;
 
                 return 1;
 
@@ -192,6 +194,7 @@ static int pdo_taos_stmt_param_hook(pdo_stmt_t *stmt, struct pdo_bound_param_dat
 
                 b = (PDO_TAOS_PARAM_BIND *) param->driver_data;
                 *b->is_null = 0;
+                b->num = 1;
 
                 if (Z_TYPE_P(parameter) == IS_NULL) {
                     *b->is_null = 1;
@@ -219,6 +222,7 @@ static int pdo_taos_stmt_param_hook(pdo_stmt_t *stmt, struct pdo_bound_param_dat
                     case TSDB_DATA_TYPE_BIGINT + 6000:
 
                     case TSDB_DATA_TYPE_DOUBLE + 6000:
+                    case TSDB_DATA_TYPE_DECIMAL + 6000:
                     case TSDB_DATA_TYPE_TIMESTAMP + 6000:
                     case TSDB_DATA_TYPE_UTINYINT + 6000:
                     case TSDB_DATA_TYPE_USMALLINT + 6000:
@@ -236,11 +240,13 @@ static int pdo_taos_stmt_param_hook(pdo_stmt_t *stmt, struct pdo_bound_param_dat
                         return 1;
                         break;
 
-#ifdef TSDB_DATA_TYPE_JSON
-                    case TSDB_DATA_TYPE_JSON:
-#endif
                     case TSDB_DATA_TYPE_BINARY + 6000:
+                    case TSDB_DATA_TYPE_VARBINARY + 6000:
                     case TSDB_DATA_TYPE_NCHAR + 6000:
+                    case TSDB_DATA_TYPE_JSON + 6000:
+                    case TSDB_DATA_TYPE_BLOB + 6000:
+                    case TSDB_DATA_TYPE_MEDIUMBLOB + 6000:
+                    case TSDB_DATA_TYPE_MAX + 6000:
                         b->buffer_type = PDO_PARAM_TYPE(param->param_type) - 6000;
                         b->buffer = Z_STRVAL_P(parameter);
                         b->buffer_length = Z_STRLEN_P(parameter);
@@ -482,8 +488,12 @@ static int pdo_taos_stmt_get_col(pdo_stmt_t *stmt, int colno, char **ptr, unsign
                 break;
 
             case TSDB_DATA_TYPE_BINARY:
+            case TSDB_DATA_TYPE_VARBINARY:
             case TSDB_DATA_TYPE_NCHAR:
-            case TSDB_DATA_TYPE_JSON: {
+            case TSDB_DATA_TYPE_JSON:
+            case TSDB_DATA_TYPE_BLOB:
+            case TSDB_DATA_TYPE_MEDIUMBLOB:
+            case TSDB_DATA_TYPE_MAX: {
                 int32_t charLen;
                 charLen = varDataLen((char *) row[colno] - VARSTR_HEADER_SIZE);
                 *ptr = (char *) row[colno];
