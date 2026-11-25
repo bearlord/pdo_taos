@@ -4,6 +4,30 @@ PDO_TAOS is a [TDengine](https://github.com/taosdata/TDengine) driver for PDO.
 
 [TDengine ](https://github.com/taosdata/TDengine)has agreed to use library files to develop PHP extension.
 
+## Apache IoTDB REST adapter (userland PHP)
+
+The `src/` directory also contains a standalone PDO-style adapter for Apache IoTDB REST v1. It requires PHP 7.4 or newer and does not require `libtaos`:
+
+```php
+require_once __DIR__ . '/src/IoTdbException.php';
+require_once __DIR__ . '/src/IoTdbPdo.php';
+require_once __DIR__ . '/src/IoTdbStatement.php';
+
+$db = new \Bearlord\PdoIotdb\IoTdbPdo(
+    'iotdb:host=127.0.0.1;port=18080;model=tree',
+    'root',
+    'root'
+);
+
+$rows = $db->query('SELECT s1 FROM root.sg.d1 LIMIT 10')->fetchAll();
+$insert = $db->prepare('INSERT INTO root.sg.d1(time, s1) VALUES (?, ?)');
+$insert->execute([time() * 1000, 42]);
+```
+
+For the IoTDB Table model, use a DSN such as `iotdb:host=127.0.0.1;port=18080;model=table;database=weather`. Tree requests go to `/rest/v1/query` or `/rest/v1/nonQuery`; Table requests go to `/rest/table/v1/query` or `/rest/table/v1/nonQuery` and include the configured database. The adapter defaults to a 30-second timeout, a 10,000-row limit, and a 16 MiB response limit. HTTPS certificate and peer names are verified. Run the mock transport suite with `php tests/run.php`.
+
+This is a userland API: it does not extend PHP's `PDO`, register an `iotdb:` PDO driver, or replace this repository's native `taos:` extension. IoTDB REST v1 does not expose server-side prepared statements; `prepare()`/`execute()` therefore expand escaped SQL literals on the client. Do not treat it as a native prepared-statement boundary. Transactions, PDO constants, and other unimplemented `PDO` methods are not provided. IoTDB failures are reported as `Bearlord\PdoIotdb\IoTdbException`, which includes `getSqlState()` and `errorInfo()`.
+
 # What is TDengine？
 
 TDengine is an open-sourced big data platform under [GNU AGPL v3.0](http://www.gnu.org/licenses/agpl-3.0.html), designed and optimized for the Internet of Things (IoT), Connected Cars, Industrial IoT, and IT Infrastructure and Application Monitoring. Besides the 10x faster time-series database, it provides caching, stream computing, message queuing and other functionalities to reduce the complexity and cost of development and operation.

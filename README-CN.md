@@ -6,6 +6,30 @@ PDO_TAOS是 [涛思数据](https://github.com/taosdata/TDengine) 的PDO驱动。
 
 
 
+## Apache IoTDB REST 适配器（PHP 用户态实现）
+
+`src/` 目录还提供独立的 Apache IoTDB REST v1 PDO 风格适配器，要求 PHP 7.4 或更高版本，不依赖 `libtaos`：
+
+```php
+require_once __DIR__ . '/src/IoTdbException.php';
+require_once __DIR__ . '/src/IoTdbPdo.php';
+require_once __DIR__ . '/src/IoTdbStatement.php';
+
+$db = new \Bearlord\PdoIotdb\IoTdbPdo(
+    'iotdb:host=127.0.0.1;port=18080;model=tree',
+    'root',
+    'root'
+);
+
+$rows = $db->query('SELECT s1 FROM root.sg.d1 LIMIT 10')->fetchAll();
+$insert = $db->prepare('INSERT INTO root.sg.d1(time, s1) VALUES (?, ?)');
+$insert->execute([time() * 1000, 42]);
+```
+
+IoTDB Table 模型可使用如下 DSN：`iotdb:host=127.0.0.1;port=18080;model=table;database=weather`。Tree 请求使用 `/rest/v1/query` 或 `/rest/v1/nonQuery`；Table 请求使用 `/rest/table/v1/query` 或 `/rest/table/v1/nonQuery`，并携带配置的数据库名。默认 HTTP 超时为 30 秒、查询行数上限为 10,000、响应体上限为 16 MiB。HTTPS 会验证证书和对端名称。运行 mock transport 测试：`php tests/run.php`。
+
+这是 PHP 用户态 API：它不继承 PHP 的 `PDO`，不注册 `iotdb:` PDO 驱动，也不替代本仓库原生的 `taos:` 扩展。IoTDB REST v1 没有服务端预处理语句接口，因此 `prepare()`/`execute()` 会在客户端将已转义的值展开成 SQL 字面量，不能将其视作原生服务端参数绑定边界。此实现不提供事务、PDO 常量及其他未实现的 `PDO` 方法。IoTDB 错误会抛出 `Bearlord\PdoIotdb\IoTdbException`，可通过 `getSqlState()` 和 `errorInfo()` 查看错误信息。
+
 # TDengine 简介
 
 TDengine是涛思数据专为物联网、车联网、工业互联网、IT运维等设计和优化的大数据平台。除核心的快10倍以上的时序数据库功能外，还提供缓存、数据订阅、流式计算等功能，最大程度减少研发和运维的复杂度，且核心代码，包括集群功能全部开源（开源协议，AGPL v3.0）。
